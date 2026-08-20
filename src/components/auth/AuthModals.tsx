@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 import {
   setCurrentUser,
   notifyAuthChanged,
@@ -45,6 +46,14 @@ export default function AuthModals() {
 
     window.addEventListener("app:open-login", openLogin);
     window.addEventListener("app:open-register", openRegister);
+
+    // Auto open login modal if redirected by middleware with ?openLogin=true
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("openLogin") === "true") {
+        openLogin();
+      }
+    }
 
     return () => {
       window.removeEventListener("app:open-login", openLogin);
@@ -92,6 +101,13 @@ export default function AuthModals() {
         return;
       }
 
+      // NextAuth Sign In
+      await signIn("user-credentials", {
+        email,
+        password: registerPassword,
+        redirect: false,
+      });
+
       const newUser = { fullName: data.fullName, email: data.email, phone: data.phone };
       setCurrentUser(newUser);
       notifyAuthChanged();
@@ -123,27 +139,49 @@ export default function AuthModals() {
     setIsLoggingIn(true);
 
     try {
-      const res = await fetch("/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await signIn("user-credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        setLoginError(data.error || "Email atau password salah.");
+      if (!res || res.error) {
+        setLoginError("Email atau password salah.");
         return;
       }
 
-      const user = { fullName: data.fullName, email: data.email, phone: data.phone };
-      setCurrentUser(user);
+      // Fetch user info for local storage synchronization
+      try {
+        const userRes = await fetch("/api/users");
+        if (userRes.ok) {
+          const userList = await userRes.json();
+          const match = userList.find((u: any) => u.email.toLowerCase() === email);
+          if (match) {
+            setCurrentUser({ fullName: match.fullName, email: match.email, phone: match.phone });
+          } else {
+            setCurrentUser({ fullName: email.split("@")[0], email, phone: "" });
+          }
+        } else {
+          setCurrentUser({ fullName: email.split("@")[0], email, phone: "" });
+        }
+      } catch {
+        setCurrentUser({ fullName: email.split("@")[0], email, phone: "" });
+      }
+
       notifyAuthChanged();
 
       setLoginOpen(false);
       setLoginEmail("");
       setLoginPassword("");
 
-      showToast(`Selamat datang kembali, ${user.fullName}!`, "success");
+      showToast(`Selamat datang kembali!`, "success");
+
+      // If callbackUrl exists in query params, navigate there
+      const params = new URLSearchParams(window.location.search);
+      const callbackUrl = params.get("callbackUrl");
+      if (callbackUrl) {
+        window.location.href = callbackUrl;
+      }
     } catch (err: any) {
       setLoginError("Terjadi kesalahan sistem saat login.");
     } finally {

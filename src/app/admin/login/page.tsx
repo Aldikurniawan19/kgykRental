@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import {
   PiLockKeyFill,
   PiEnvelopeSimpleFill,
@@ -14,8 +15,8 @@ import {
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@kgyk.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,21 +27,25 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await signIn("admin-credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        localStorage.setItem("kgyk_admin_auth", "true");
-        localStorage.setItem("kgyk_admin_user", JSON.stringify(data.user));
-        router.push("/admin");
-      } else {
-        setError(data.error || "Email atau kata sandi tidak valid.");
+      if (!res || res.error) {
+        setError("Email atau kata sandi admin tidak valid.");
+        return;
       }
+
+      localStorage.setItem("kgyk_admin_auth", "true");
+      localStorage.setItem(
+        "kgyk_admin_user",
+        JSON.stringify({ email: email || "admin@kgyk.com", name: "Admin Operasional KGYK" })
+      );
+
+      router.push("/admin");
+      router.refresh();
     } catch (err) {
       setError("Gagal terhubung ke server. Silakan coba lagi.");
     } finally {
@@ -71,15 +76,6 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          {/* Clean Hint Box */}
-          <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-[11px] text-slate-600 space-y-0.5">
-            <span className="font-bold text-navy block">Kredensial Default:</span>
-            <div className="flex justify-between font-mono text-[10px] text-slate-700">
-              <span>Email: <strong>admin@kgyk.com</strong></span>
-              <span>Password: <strong>admin123</strong></span>
-            </div>
-          </div>
-
           {/* Error Alert */}
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-600 text-center">
@@ -89,50 +85,43 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             {/* Email Field */}
-            <div>
-              <label className="font-extrabold text-navy block mb-1.5">
-                Email / Username Admin
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  placeholder="admin@kgyk.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <PiEnvelopeSimpleFill className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base" />
-              </div>
+            <div className="relative">
+              <input
+                type="text"
+                required
+                disabled={loading}
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs"
+                placeholder="Email Admin"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <PiEnvelopeSimpleFill className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base" />
             </div>
 
             {/* Password Field */}
-            <div>
-              <label className="font-extrabold text-navy block mb-1.5">
-                Kata Sandi
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <PiLockKeyFill className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base" />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
-                >
-                  {showPassword ? (
-                    <PiEyeSlashFill className="text-base" />
-                  ) : (
-                    <PiEyeFill className="text-base" />
-                  )}
-                </button>
-              </div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                disabled={loading}
+                className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs"
+                placeholder="Kata Sandi Admin"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <PiLockKeyFill className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base" />
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+              >
+                {showPassword ? (
+                  <PiEyeSlashFill className="text-base" />
+                ) : (
+                  <PiEyeFill className="text-base" />
+                )}
+              </button>
             </div>
 
             {/* Submit Button */}

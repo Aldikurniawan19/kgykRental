@@ -159,9 +159,19 @@ export async function ensureDbInitialized() {
           "whatsapp" TEXT NOT NULL DEFAULT '62881023331644',
           "email" TEXT NOT NULL DEFAULT 'info@kgykrental.com',
           "address" TEXT NOT NULL DEFAULT 'Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281',
+          "adminEmail" TEXT NOT NULL DEFAULT 'admin@kgyk.com',
+          "adminPassword" TEXT NOT NULL DEFAULT 'admin123',
           "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
       `);
+    } catch {}
+
+    // Ensure adminEmail & adminPassword columns exist
+    try {
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Setting" ADD COLUMN "adminEmail" TEXT DEFAULT 'admin@kgyk.com';`);
+    } catch {}
+    try {
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Setting" ADD COLUMN "adminPassword" TEXT DEFAULT 'admin123';`);
     } catch {}
 
     // Seed default setting row if empty

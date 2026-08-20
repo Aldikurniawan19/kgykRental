@@ -63,11 +63,12 @@ model User {
 }
 
 model Setting {
-  id        Int      @id @default(1)
-  phone     String   @default("+62 881-0233-31644")
-  whatsapp  String   @default("62881023331644")
-  email     String   @default("info@kgykrental.com")
-  address   String   @default("Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281")
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(1)
+  phone         String   @default("+62 881-0233-31644")
+  whatsapp      String   @default("62881023331644")
+  email         String   @default("info@kgykrental.com")
+  address       String   @default("Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281")
+  adminEmail    String   @default("admin@kgyk.com")
+  adminPassword String   @default("admin123")
+  updatedAt     DateTime @updatedAt
 }
-

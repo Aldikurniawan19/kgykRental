@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   PiGaugeFill,
   PiCarFill,
@@ -44,11 +45,11 @@ export default function AdminLayout({
     }
   }, [pathname, isLoginPage, router]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutConfirm(false);
     localStorage.removeItem("kgyk_admin_auth");
     localStorage.removeItem("kgyk_admin_user");
-    router.push("/admin/login");
+    await signOut({ callbackUrl: "/admin/login" });
   };
 
   const navItems = [
@@ -69,7 +70,7 @@ export default function AdminLayout({
       icon: PiReceiptFill,
     },
     {
-      name: "Pengaturan Kontak",
+      name: "Pengaturan",
       href: "/admin/pengaturan",
       icon: PiSlidersHorizontalFill,
     },

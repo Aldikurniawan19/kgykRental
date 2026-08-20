@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import {
   getCurrentUser,
   clearCurrentUser,
@@ -162,15 +163,13 @@ export default function Header() {
     };
   }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setDropdownOpen(false);
     closeMobileMenu();
     clearCurrentUser();
     notifyAuthChanged();
     showToast("Anda telah berhasil keluar.", "info");
-    if (window.location.hash === "#kontak" || window.location.hash === "#reservasi") {
-      window.location.hash = "";
-    }
+    await signOut({ callbackUrl: "/" });
   };
 
   const navItems = [

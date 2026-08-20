@@ -4,6 +4,7 @@ import "./globals.css";
 import Toast from "@/components/Toast";
 import GSAPInit from "@/components/GSAPInit";
 import AuthModals from "@/components/auth/AuthModals";
+import NextAuthProvider from "@/components/NextAuthProvider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -33,10 +34,12 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} scroll-smooth`}
     >
       <body className="bg-lightbg text-slate-800 antialiased selection:bg-primary selection:text-white">
-        {children}
-        <AuthModals />
-        <Toast />
-        <GSAPInit />
+        <NextAuthProvider>
+          {children}
+          <AuthModals />
+          <Toast />
+          <GSAPInit />
+        </NextAuthProvider>
       </body>
     </html>
   );
