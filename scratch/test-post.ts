@@ -1,5 +1,5 @@
-import { prisma } from "./src/lib/prisma";
-import { ensureDbInitialized } from "./src/lib/db-init";
+import { prisma } from "@/lib/prisma";
+import { ensureDbInitialized } from "@/lib/db-init";
 
 async function main() {
   try {
