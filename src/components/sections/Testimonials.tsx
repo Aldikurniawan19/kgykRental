@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import SectionHeader from "@/components/ui/SectionHeader";
+import { PiStarFill, PiStar } from "react-icons/pi";
 
 const testimonials = [
   {
@@ -79,9 +80,9 @@ export default function Testimonials() {
                     <div className="flex gap-1 text-accent">
                       {Array.from({ length: 5 }).map((_, i) =>
                         i < testi.stars ? (
-                          <i key={i} className="ph-fill ph-star text-lg"></i>
+                          <PiStarFill key={i} className="text-lg" />
                         ) : (
-                          <i key={i} className="ph ph-star text-lg"></i>
+                          <PiStar key={i} className="text-lg" />
                         )
                       )}
                     </div>

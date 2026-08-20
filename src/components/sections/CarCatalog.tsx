@@ -6,6 +6,14 @@ import { cars } from "@/data/cars";
 import { openCarDetail, bookCar } from "@/lib/app";
 import { formatRupiah } from "@/lib/format";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  PiArrowRight,
+  PiUsers,
+  PiGasPump,
+  PiSteeringWheel,
+  PiInfo,
+  PiCar,
+} from "react-icons/pi";
 
 const filters = [
   { value: "all", label: "Semua Tipe" },
@@ -22,7 +30,7 @@ export default function CarCatalog() {
     currentFilter === "all"
       ? cars
       : cars.filter((c) => c.category === currentFilter);
-  const displayCars = filteredCars;
+  const displayCars = filteredCars.slice(0, 3);
 
   useEffect(() => {
     ScrollTrigger.refresh();
@@ -41,15 +49,21 @@ export default function CarCatalog() {
             </h2>
           </div>
 
-          <div className="shrink-0" data-gsap="fade-left">
+          <div className="shrink-0 self-end sm:self-auto" data-gsap="fade-left">
             <Link
               href="/katalog"
-              className="inline-flex items-center gap-1.5 text-primary hover:text-blue-700 text-sm font-bold transition-colors group"
+              scroll={true}
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                }
+              }}
+              className="inline-flex items-center gap-1.5 text-primary hover:text-blue-700 text-sm font-bold transition-colors group cursor-pointer"
             >
               <span className="border-b border-transparent group-hover:border-blue-700 pb-0.5">
                 Lihat Selengkapnya
               </span>
-              <i className="ph ph-arrow-right font-bold group-hover:translate-x-1 transition-transform"></i>
+              <PiArrowRight className="font-bold group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
@@ -118,13 +132,13 @@ export default function CarCatalog() {
                   </h3>
                   <div className="grid grid-cols-2 gap-y-3 mb-6">
                     <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <i className="ph text-primary ph-users"></i> {car.capacity}
+                      <PiUsers className="text-primary text-base" /> {car.capacity}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <i className="ph text-primary ph-gas-pump"></i> Bensin
+                      <PiGasPump className="text-primary text-base" /> Bensin
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600 col-span-2">
-                      <i className="ph text-primary ph-steering-wheel"></i> {car.trans}
+                      <PiSteeringWheel className="text-primary text-base" /> {car.trans}
                     </div>
                   </div>
 
@@ -142,7 +156,7 @@ export default function CarCatalog() {
                         className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary text-sm font-semibold transition-colors cursor-pointer"
                         title="Lihat Detail"
                       >
-                        <i className="ph ph-info text-lg"></i>
+                        <PiInfo className="text-lg" />
                       </button>
                       <button
                         disabled={!car.status}
@@ -158,10 +172,9 @@ export default function CarCatalog() {
             );
           })}
         </div>
-
         {displayCars.length === 0 && (
           <div id="noCarFound" className="text-center py-20">
-            <i className="ph ph-car text-6xl text-slate-300 mb-4"></i>
+            <PiCar className="text-6xl text-slate-300 mb-4 mx-auto" />
             <h3 className="text-xl font-bold text-navy mb-2">
               Mobil tidak ditemukan
             </h3>

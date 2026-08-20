@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PiArrowRight, PiCaretDown } from "react-icons/pi";
 
 const faqs = [
   {
@@ -46,7 +47,7 @@ export default function Faq() {
               className="text-primary font-semibold flex items-center gap-2 hover:underline"
             >
               Punya pertanyaan lain? Hubungi Kami{" "}
-              <i className="ph-bold ph-arrow-right"></i>
+              <PiArrowRight className="font-bold" />
             </a>
           </div>
 
@@ -62,15 +63,15 @@ export default function Faq() {
                     }`}
                   >
                     <button
-                      className="faq-button w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-navy hover:bg-slate-50 focus:outline-none"
+                      className="faq-button w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-navy hover:bg-slate-50 focus:outline-none cursor-pointer"
                       onClick={() => toggleFaq(index)}
                     >
                       <span>{faq.q}</span>
-                      <i
-                        className={`ph ph-caret-down text-slate-400 transition-transform duration-300 ${
+                      <PiCaretDown
+                        className={`text-slate-400 text-lg transition-transform duration-300 ${
                           isOpen ? "rotate-180" : ""
                         }`}
-                      ></i>
+                      />
                     </button>
                     <div
                       className={`faq-content px-6 pb-5 text-slate-600 text-sm leading-relaxed ${

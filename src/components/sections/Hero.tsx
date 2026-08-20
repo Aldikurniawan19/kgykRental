@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { PiCalendarPlus, PiCheckCircleFill } from "react-icons/pi";
 
 export default function Hero() {
   const textRef = useRef<HTMLDivElement>(null);
@@ -92,20 +93,20 @@ export default function Hero() {
               href="#reservasi"
               className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/25 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 text-center flex items-center justify-center gap-2"
             >
-              <i className="ph ph-calendar-plus text-xl text-white"></i>
+              <PiCalendarPlus className="text-xl text-white" />
               Reservasi Online
             </a>
           </div>
 
           <div className="mt-10 flex items-center justify-start gap-6 text-slate-300 text-sm font-medium flex-wrap">
             <div className="flex items-center gap-2">
-              <i className="ph-fill ph-check-circle text-accent"></i> Beragam Pilihan
+              <PiCheckCircleFill className="text-accent text-lg" /> Beragam Pilihan
             </div>
             <div className="flex items-center gap-2">
-              <i className="ph-fill ph-check-circle text-accent"></i> Harga Transparan
+              <PiCheckCircleFill className="text-accent text-lg" /> Harga Transparan
             </div>
             <div className="flex items-center gap-2">
-              <i className="ph-fill ph-check-circle text-accent"></i> Layanan 24/7
+              <PiCheckCircleFill className="text-accent text-lg" /> Layanan 24/7
             </div>
           </div>
         </div>

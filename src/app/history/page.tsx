@@ -10,10 +10,31 @@ import {
   getCurrentUser,
   openLoginModal,
   openRegisterModal,
+  type AppUser,
   type Booking,
 } from "@/lib/app";
 import { cars } from "@/data/cars";
 import { formatDateShort, formatRupiah } from "@/lib/format";
+import {
+  PiHouse,
+  PiCaretRight,
+  PiArrowLeft,
+  PiLock,
+  PiCalendarBlank,
+  PiTimer,
+  PiMapPin,
+  PiMapPinLine,
+  PiCheckCircleFill,
+  PiXCircleFill,
+  PiCarFill,
+  PiSealCheckFill,
+  PiClockFill,
+  PiReceipt,
+  PiArrowCounterClockwise,
+  PiX,
+  PiPrinter,
+  PiDownload,
+} from "react-icons/pi";
 
 const getStatusClass = (status: string) => {
   if (status === "Disetujui")
@@ -27,30 +48,41 @@ const getStatusClass = (status: string) => {
   return "bg-amber-50 text-amber-700 border-amber-200/60";
 };
 
-const getStatusIcon = (status: string) => {
-  if (status === "Disetujui") return "ph-check-circle";
-  if (status === "Ditolak") return "ph-x-circle";
-  if (status === "Dalam Penyewaan") return "ph-car";
-  if (status === "Selesai") return "ph-circle-wavy-check";
-  return "ph-clock";
+const renderStatusIcon = (status: string) => {
+  if (status === "Disetujui") return <PiCheckCircleFill className="text-sm" />;
+  if (status === "Ditolak") return <PiXCircleFill className="text-sm" />;
+  if (status === "Dalam Penyewaan") return <PiCarFill className="text-sm" />;
+  if (status === "Selesai") return <PiSealCheckFill className="text-sm" />;
+  return <PiClockFill className="text-sm" />;
 };
 
 export default function HistoryPage() {
-  const [, setReloadKey] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
+  const [filterTab, setFilterTab] = useState<"all" | "active" | "completed">("all");
   const receiptPrintAreaRef = useRef<HTMLDivElement>(null);
 
-  const user = getCurrentUser();
-
-  const bookings = user
-    ? getBookings().filter((b) => b.userEmail === user.email)
-    : ([] as Booking[]);
-
   useEffect(() => {
-    const handleAuth = () => setReloadKey((k) => k + 1);
+    setIsMounted(true);
+    setUser(getCurrentUser());
+
+    const handleAuth = () => {
+      setUser(getCurrentUser());
+    };
     window.addEventListener("auth-changed", handleAuth);
     return () => window.removeEventListener("auth-changed", handleAuth);
   }, []);
+
+  const allBookings = user
+    ? getBookings().filter((b) => b.userEmail === user.email)
+    : ([] as Booking[]);
+
+  const filteredBookings = allBookings.filter((b) => {
+    if (filterTab === "active") return b.status !== "Selesai" && b.status !== "Ditolak";
+    if (filterTab === "completed") return b.status === "Selesai" || b.status === "Ditolak";
+    return true;
+  });
 
   const closeReceiptModal = () => setActiveBooking(null);
 
@@ -108,7 +140,7 @@ export default function HistoryPage() {
 
   const renderReceipt = (b: Booking) => {
     const deadline = formatDateShort(b.endDate) + ", 16:00 WIB";
-    const hasLateFee = b.lateFee && b.lateFee > 0;
+    const hasLateFee = Boolean(b.lateFee && b.lateFee > 0);
     const isPaid = b.paymentStatus === "Lunas";
 
     return (
@@ -233,7 +265,7 @@ export default function HistoryPage() {
                 LOKASI AMBIL
               </span>
               <span className="text-[10px] font-semibold text-slate-600">
-                {b.pickupLocation}
+                {b.pickupLocation || "Kantor KGYK Yogyakarta"}
               </span>
             </div>
             <div className="col-span-2">
@@ -241,7 +273,7 @@ export default function HistoryPage() {
                 LOKASI KEMBALI
               </span>
               <span className="text-[10px] font-semibold text-slate-600">
-                {b.dropoffLocation}
+                {b.dropoffLocation || "Kantor KGYK Yogyakarta"}
               </span>
             </div>
           </div>
@@ -261,7 +293,7 @@ export default function HistoryPage() {
                   Denda Keterlambatan ({b.lateFeeHours} jam)
                 </span>
                 <span className="text-red-600 font-bold font-sans">
-                  +{formatRupiah(b.lateFee)}
+                  +{formatRupiah(b.lateFee!)}
                 </span>
               </div>
             </div>
@@ -308,38 +340,55 @@ export default function HistoryPage() {
     <>
       <Header />
 
-      <main className="pt-12 pb-20 bg-lightbg min-h-[85vh] font-sans">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2.5 text-slate-600 hover:text-primary transition-all font-bold bg-white px-5 py-3 rounded-2xl shadow-soft border border-slate-100/60 max-w-max hover:shadow-md"
-            >
-              <i className="ph ph-arrow-left text-lg font-bold text-primary"></i>
-              <span>Kembali ke Beranda</span>
-            </Link>
+      <main className="min-h-screen bg-slate-50 font-sans pt-0">
+        {/* Banner Section */}
+        <section className="relative bg-gradient-to-r from-navy via-slate-900 to-navy text-white pt-28 pb-14 md:pt-36 md:pb-20 overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
 
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-accent text-navy flex items-center justify-center font-black text-sm">
-                K
-              </span>
-              <span className="text-xl font-black text-navy tracking-tight">
-                KGYK <span className="text-primary font-bold">Rental</span>
-              </span>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl">
+            <nav
+              className="flex items-center gap-2 text-xs md:text-sm text-slate-300 mb-4"
+              aria-label="Breadcrumb"
+            >
+              <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
+                <PiHouse /> Beranda
+              </Link>
+              <PiCaretRight className="text-slate-500" />
+              <span className="text-white font-semibold">Riwayat Pemesanan</span>
+            </nav>
+
+            <div className="max-w-3xl">
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-3 animate-fade-in">
+                Riwayat <span className="text-accent">Pemesanan</span>
+              </h1>
+              <p className="text-base md:text-lg text-slate-300 leading-relaxed">
+                Pantau status reservasi, jadwal penyewaan, dan akses struk pemesanan mobil Anda.
+              </p>
             </div>
           </div>
+        </section>
 
-          {!user ? (
-            <div className="bg-white rounded-3xl p-8 md:p-12 text-center shadow-soft border border-slate-100/60 max-w-md mx-auto">
-              <div className="w-20 h-20 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="ph ph-lock text-4xl"></i>
+        {/* Content Section */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-6 md:-mt-8 pb-20 relative z-20 max-w-6xl">
+          {!isMounted ? (
+            <div className="bg-white rounded-3xl p-12 text-center shadow-xl border border-slate-100 max-w-md mx-auto min-h-[300px] flex items-center justify-center">
+              <div className="animate-pulse flex flex-col items-center">
+                <div className="w-12 h-12 bg-slate-100 rounded-full mb-3"></div>
+                <div className="h-4 w-32 bg-slate-100 rounded mb-2"></div>
+                <div className="h-3 w-48 bg-slate-100 rounded"></div>
               </div>
-              <h3 className="text-2xl font-bold text-navy mb-3">Akses Terkunci</h3>
-              <p className="text-slate-500 text-sm mb-8">
-                Silakan masuk atau daftar akun terlebih dahulu untuk melihat riwayat
-                pemesanan sewa mobil Anda.
+            </div>
+          ) : !user ? (
+            <div className="bg-white rounded-3xl p-8 md:p-12 text-center shadow-xl border border-slate-100 max-w-md mx-auto animate-fade-in">
+              <div className="w-20 h-20 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-100">
+                <PiLock className="text-4xl text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-navy mb-2">Akses Terkunci</h3>
+              <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                Silakan masuk ke akun Anda atau mendaftar terlebih dahulu untuk melihat riwayat pemesanan.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <button
                   onClick={() => openLoginModal()}
                   className="px-6 py-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer"
@@ -355,41 +404,77 @@ export default function HistoryPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-8 lg:p-10 shadow-soft border border-slate-100/60">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
+              {/* Header & Filter Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
                 <div>
-                  <h3 className="text-2xl font-bold text-navy">Riwayat Pemesanan</h3>
-                  <p className="text-slate-500 text-sm">
-                    Kelola status, jadwal penyewaan, dan kelengkapan kendaraan Anda.
+                  <h2 className="text-xl md:text-2xl font-extrabold text-navy">
+                    Daftar Reservasi Anda
+                  </h2>
+                  <p className="text-slate-500 text-xs md:text-sm mt-0.5">
+                    Menampilkan total <strong className="text-navy">{allBookings.length}</strong> pemesanan
                   </p>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-200/60">
+                  <button
+                    onClick={() => setFilterTab("all")}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      filterTab === "all"
+                        ? "bg-primary text-white shadow-xs"
+                        : "text-slate-600 hover:text-navy"
+                    }`}
+                  >
+                    Semua ({allBookings.length})
+                  </button>
+                  <button
+                    onClick={() => setFilterTab("active")}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      filterTab === "active"
+                        ? "bg-primary text-white shadow-xs"
+                        : "text-slate-600 hover:text-navy"
+                    }`}
+                  >
+                    Aktif ({allBookings.filter(b => b.status !== "Selesai" && b.status !== "Ditolak").length})
+                  </button>
+                  <button
+                    onClick={() => setFilterTab("completed")}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      filterTab === "completed"
+                        ? "bg-primary text-white shadow-xs"
+                        : "text-slate-600 hover:text-navy"
+                    }`}
+                  >
+                    Selesai ({allBookings.filter(b => b.status === "Selesai" || b.status === "Ditolak").length})
+                  </button>
                 </div>
               </div>
 
-              {bookings.length === 0 ? (
+              {filteredBookings.length === 0 ? (
                 <div className="text-center py-16 px-4 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
                   <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
-                    <i className="ph ph-calendar-blank text-3xl"></i>
+                    <PiCalendarBlank className="text-3xl text-slate-400" />
                   </div>
                   <h4 className="text-navy font-bold text-lg mb-1">
                     Belum Ada Pemesanan
                   </h4>
-                  <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">
-                    Anda belum memesan kendaraan apapun. Pilih armada favorit Anda dan
-                    nikmati perjalanan menyenangkan.
+                  <p className="text-slate-500 text-xs md:text-sm max-w-sm mx-auto mb-6">
+                    {filterTab === "all"
+                      ? "Anda belum memesan kendaraan apapun. Pilih armada favorit Anda dan mulai perjalanan!"
+                      : "Tidak ada riwayat pemesanan pada kategori ini."}
                   </p>
                   <Link
-                    href="/"
-                    className="px-5 py-2.5 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm"
+                    href="/katalog"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-all shadow-md"
                   >
                     Cari Mobil Sekarang
                   </Link>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-gsap="stagger-cards">
-                  {bookings.map((b) => {
+                  {filteredBookings.map((b) => {
                     const statusClass = getStatusClass(b.status);
-                    const statusIcon = getStatusIcon(b.status);
-                    const hasLateFee = b.lateFee && b.lateFee > 0;
+                    const hasLateFee = Boolean(b.lateFee && b.lateFee > 0);
 
                     const car = cars.find((c) => c.name === b.carName);
                     const carImg = car
@@ -400,25 +485,27 @@ export default function HistoryPage() {
                     return (
                       <div
                         key={b.id}
-                        className="bg-white rounded-3xl p-6 shadow-soft border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                        className="bg-white rounded-2xl md:rounded-3xl p-5 shadow-sm hover:shadow-lg border border-slate-100/90 transition-all duration-300 flex flex-col justify-between"
                       >
                         <div>
-                          <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-100">
-                            <div className="flex items-center gap-1.5">
-                              <span className="px-2 py-0.5 bg-blue-50 rounded-md text-[10px] font-extrabold text-blue-600 tracking-wider font-mono">
-                                {b.bookingCode || "#" + b.id.toString().slice(-6)}
+                          {/* Header Bar */}
+                          <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+                            <div className="flex items-center gap-2">
+                              <span className="px-2.5 py-1 bg-slate-100 text-navy rounded-lg text-xs font-mono font-bold border border-slate-200/60">
+                                {b.bookingCode || `#${b.id.toString().slice(-6)}`}
                               </span>
                             </div>
                             <span
-                              className={`px-2.5 py-1 inline-flex items-center gap-1 text-[11px] font-bold leading-5 rounded-full border ${statusClass}`}
+                              className={`px-3 py-1 inline-flex items-center gap-1.5 text-xs font-bold rounded-full border ${statusClass}`}
                             >
-                              <i className={`ph-fill ${statusIcon}`}></i>
+                              {renderStatusIcon(b.status)}
                               {b.status}
                             </span>
                           </div>
 
-                          <div className="flex flex-col sm:flex-row gap-5 mb-5">
-                            <div className="w-full sm:w-2/5 aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 bg-white flex items-center justify-center p-2 shrink-0">
+                          {/* Body Content */}
+                          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                            <div className="w-full sm:w-36 h-28 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-center p-2 shrink-0">
                               <img
                                 src={carImg}
                                 alt={b.carName}
@@ -428,104 +515,86 @@ export default function HistoryPage() {
 
                             <div className="flex-1 space-y-2">
                               <div className="flex items-start justify-between gap-2">
-                                <h4 className="text-base font-bold text-navy">
-                                  {b.carName}
-                                </h4>
-                                <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold">
-                                  {carType}
-                                </span>
+                                <div>
+                                  <h4 className="text-base font-extrabold text-navy mb-0.5">
+                                    {b.carName}
+                                  </h4>
+                                  <span className="inline-block text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                                    {carType} • {b.serviceType}
+                                  </span>
+                                </div>
+                                {b.paymentStatus === "Lunas" ? (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1 shrink-0">
+                                    <PiCheckCircleFill className="text-xs" /> Lunas
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1 shrink-0">
+                                    <PiClockFill className="text-xs" /> Belum Bayar
+                                  </span>
+                                )}
                               </div>
 
-                              <div className="grid grid-cols-1 gap-1.5 text-[11px] text-slate-600">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-600 pt-1">
                                 <div className="flex items-center gap-1.5">
-                                  <i className="ph ph-calendar-blank text-slate-400 text-sm"></i>
+                                  <PiCalendarBlank className="text-primary text-sm shrink-0" />
                                   <span className="font-semibold text-slate-700">
-                                    {formatDateShort(b.startDate)} -{" "}
-                                    {formatDateShort(b.endDate)}
+                                    {formatDateShort(b.startDate)} - {formatDateShort(b.endDate)}
+                                  </span>
+                                  <span className="text-[11px] font-normal text-slate-400">
+                                    ({b.duration} Hari)
                                   </span>
                                 </div>
+
                                 <div className="flex items-center gap-1.5">
-                                  <i className="ph ph-timer text-slate-400 text-sm"></i>
-                                  <span>
-                                    Durasi:{" "}
-                                    <span className="font-bold text-slate-700">
-                                      {b.duration} Hari
-                                    </span>{" "}
-                                    ({b.serviceType})
+                                  <PiMapPin className="text-primary text-sm shrink-0" />
+                                  <span className="truncate">
+                                    Ambil: <strong className="text-slate-700">{b.pickupLocation || "Kantor KGYK Yogyakarta"}</strong>
                                   </span>
                                 </div>
-                                <div className="flex items-start gap-1.5">
-                                  <i className="ph ph-map-pin text-slate-400 text-sm mt-0.5"></i>
-                                  <span>
-                                    Ambil:{" "}
-                                    <span className="font-medium text-slate-700">
-                                      {b.pickupLocation}
-                                    </span>
-                                  </span>
-                                </div>
-                                <div className="flex items-start gap-1.5">
-                                  <i className="ph ph-map-pin-line text-slate-400 text-sm mt-0.5"></i>
-                                  <span>
-                                    Kembali:{" "}
-                                    <span className="font-medium text-slate-700">
-                                      {b.dropoffLocation}
-                                    </span>
+
+                                <div className="flex items-center gap-1.5 sm:col-span-2">
+                                  <PiMapPinLine className="text-primary text-sm shrink-0" />
+                                  <span className="truncate">
+                                    Kembali: <strong className="text-slate-700">{b.dropoffLocation || "Kantor KGYK Yogyakarta"}</strong>
                                   </span>
                                 </div>
                               </div>
-
-                              {b.paymentStatus === "Lunas" ? (
-                                <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1 w-max">
-                                  <i className="ph-fill ph-check-circle"></i> Lunas
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1 w-max">
-                                  <i className="ph-fill ph-clock"></i> Belum Bayar
-                                </div>
-                              )}
 
                               {hasLateFee && (
-                                <div className="bg-red-50 border border-red-100 rounded-lg p-2 text-[10px]">
-                                  <span className="text-red-600 font-bold">
-                                    Denda Keterlambatan: {formatRupiah(b.lateFee)} (
-                                    {b.lateFeeHours} jam)
-                                  </span>
+                                <div className="bg-red-50 border border-red-100 rounded-lg p-2 text-[11px] text-red-600 font-semibold mt-2">
+                                  Denda Keterlambatan ({b.lateFeeHours} jam): +{formatRupiah(b.lateFee!)}
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
 
-                        <div className="pt-4 border-t border-slate-100 flex flex-row items-center justify-between gap-4 mt-auto">
+                        {/* Footer Bar */}
+                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
                           <div>
-                            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                               Total Biaya
                             </span>
                             <span className="text-lg font-extrabold text-navy">
                               {formatRupiah(b.grandTotal || b.totalPrice)}
                             </span>
-                            {hasLateFee && (
-                              <span className="text-[9px] text-red-500 font-bold block">
-                                Termasuk denda {formatRupiah(b.lateFee)}
-                              </span>
-                            )}
                           </div>
 
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setActiveBooking(b)}
-                              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1 border border-slate-200"
+                              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
                             >
-                              <i className="ph ph-receipt"></i> Struk
+                              <PiReceipt className="text-base" /> Struk
                             </button>
 
                             {b.status === "Selesai" && (
                               <Link
                                 href={`/?car=${encodeURIComponent(b.carName)}#reservasi`}
-                                className="px-3.5 py-2 bg-primary hover:bg-blue-700 text-white text-[11px] font-bold rounded-xl transition-all shadow-sm hover:shadow text-center flex items-center gap-1.5 cursor-pointer"
+                                className="px-3.5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center flex items-center gap-1.5 cursor-pointer"
                               >
-                                <i className="ph ph-arrow-counter-clockwise font-bold"></i>
-                                Pesan Kembali
+                                <PiArrowCounterClockwise className="text-sm font-bold" />
+                                Pesan Lagi
                               </Link>
                             )}
                           </div>
@@ -537,7 +606,7 @@ export default function HistoryPage() {
               )}
             </div>
           )}
-        </div>
+        </section>
       </main>
 
       {activeBooking && (
@@ -555,7 +624,7 @@ export default function HistoryPage() {
                 onClick={closeReceiptModal}
                 className="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
               >
-                <i className="ph ph-x text-lg"></i>
+                <PiX className="text-lg" />
               </button>
             </div>
 
@@ -567,14 +636,14 @@ export default function HistoryPage() {
                   onClick={() => window.print()}
                   className="flex-1 py-3 px-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
                 >
-                  <i className="ph ph-printer text-lg"></i>
+                  <PiPrinter className="text-lg" />
                   Cetak Struk
                 </button>
                 <button
                   onClick={handleDownload}
                   className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
                 >
-                  <i className="ph ph-download text-lg"></i>
+                  <PiDownload className="text-lg" />
                   Unduh Gambar
                 </button>
               </div>

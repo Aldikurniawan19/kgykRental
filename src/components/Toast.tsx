@@ -1,17 +1,27 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import type { ToastType } from "@/lib/app";
+import {
+  PiCheckCircleFill,
+  PiWarningCircleFill,
+  PiWarningFill,
+  PiInfoFill,
+  PiX,
+} from "react-icons/pi";
 
 const DURATION = 4000;
 const MAX = 3;
 
-const ICONS: Record<ToastType, string> = {
-  success: "ph-fill ph-check-circle",
-  error: "ph-fill ph-warning-circle",
-  warning: "ph-fill ph-warning",
-  info: "ph-fill ph-info",
+const ICON_SVGS: Record<ToastType, string> = {
+  success: renderToStaticMarkup(<PiCheckCircleFill />),
+  error: renderToStaticMarkup(<PiWarningCircleFill />),
+  warning: renderToStaticMarkup(<PiWarningFill />),
+  info: renderToStaticMarkup(<PiInfoFill />),
 };
+
+const CLOSE_SVG = renderToStaticMarkup(<PiX />);
 
 const TITLES: Record<ToastType, string> = {
   success: "Berhasil!",
@@ -65,7 +75,7 @@ export default function Toast() {
       const box = containerRef.current;
       if (!box) return;
 
-      const iconClass = ICONS[type] || ICONS.success;
+      const iconSvg = ICON_SVGS[type] || ICON_SVGS.success;
       const title = TITLES[type] || TITLES.success;
 
       const live = box.querySelectorAll(".toast:not(.toast--exit)");
@@ -78,8 +88,8 @@ export default function Toast() {
       el.setAttribute("role", "alert");
 
       el.innerHTML =
-        '<button class="toast__close" aria-label="Tutup"><i class="ph ph-x"></i></button>' +
-        `<div class="toast__icon"><i class="${iconClass}"></i></div>` +
+        `<button class="toast__close" aria-label="Tutup">${CLOSE_SVG}</button>` +
+        `<div class="toast__icon">${iconSvg}</div>` +
         `<div class="toast__title">${title}</div>` +
         `<div class="toast__body"><div class="toast__message">${message}</div></div>` +
         '<div class="toast__progress"></div>';

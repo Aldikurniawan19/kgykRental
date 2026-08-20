@@ -1,3 +1,15 @@
+import {
+  PiInstagramLogo,
+  PiFacebookLogo,
+  PiYoutubeLogo,
+  PiWhatsappLogo,
+  PiCaretRight,
+  PiMapPin,
+  PiPhone,
+  PiEnvelope,
+  PiClock,
+} from "react-icons/pi";
+
 export default function Footer() {
   return (
     <footer className="bg-navy pt-20 pb-10 border-t border-slate-800 font-sans">
@@ -5,10 +17,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-16" data-gsap="stagger-cards">
           {/* Brand & Socials Column */}
           <div className="md:col-span-2 lg:col-span-3">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-navy shadow-sm">
-                <i className="ph ph-car-profile text-2xl"></i>
-              </div>
+            <div className="flex items-center mb-6">
               <span className="font-bold text-2xl tracking-tight text-white">
                 KGYK<span className="text-accent">.</span>
               </span>
@@ -22,26 +31,30 @@ export default function Footer() {
               <a
                 href="#"
                 className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-accent text-slate-400 hover:text-navy flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1"
+                aria-label="Instagram"
               >
-                <i className="ph ph-instagram-logo text-lg"></i>
+                <PiInstagramLogo className="text-lg" />
               </a>
               <a
                 href="#"
                 className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-accent text-slate-400 hover:text-navy flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1"
+                aria-label="Facebook"
               >
-                <i className="ph ph-facebook-logo text-lg"></i>
+                <PiFacebookLogo className="text-lg" />
               </a>
               <a
                 href="#"
                 className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-accent text-slate-400 hover:text-navy flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1"
+                aria-label="YouTube"
               >
-                <i className="ph ph-youtube-logo text-lg"></i>
+                <PiYoutubeLogo className="text-lg" />
               </a>
               <a
                 href="#"
                 className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-accent text-slate-400 hover:text-navy flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1"
+                aria-label="WhatsApp"
               >
-                <i className="ph ph-whatsapp-logo text-lg"></i>
+                <PiWhatsappLogo className="text-lg" />
               </a>
             </div>
           </div>
@@ -57,7 +70,7 @@ export default function Footer() {
                   href="#home"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Beranda
+                  <PiCaretRight className="text-xs" /> Beranda
                 </a>
               </li>
               <li>
@@ -65,7 +78,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Layanan Kami
+                  <PiCaretRight className="text-xs" /> Layanan Kami
                 </a>
               </li>
               <li>
@@ -73,7 +86,7 @@ export default function Footer() {
                   href="#mobil"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Katalog Mobil
+                  <PiCaretRight className="text-xs" /> Katalog Mobil
                 </a>
               </li>
               <li>
@@ -81,7 +94,7 @@ export default function Footer() {
                   href="#keunggulan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Keunggulan
+                  <PiCaretRight className="text-xs" /> Keunggulan
                 </a>
               </li>
               <li>
@@ -89,7 +102,7 @@ export default function Footer() {
                   href="#testimoni"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Testimoni
+                  <PiCaretRight className="text-xs" /> Testimoni
                 </a>
               </li>
             </ul>
@@ -106,7 +119,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Rental Harian
+                  <PiCaretRight className="text-xs" /> Rental Harian
                 </a>
               </li>
               <li>
@@ -114,7 +127,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Tour Wisata
+                  <PiCaretRight className="text-xs" /> Tour Wisata
                 </a>
               </li>
               <li>
@@ -122,7 +135,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Dengan Sopir
+                  <PiCaretRight className="text-xs" /> Dengan Sopir
                 </a>
               </li>
               <li>
@@ -130,7 +143,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Jemput Bandara
+                  <PiCaretRight className="text-xs" /> Jemput Bandara
                 </a>
               </li>
               <li>
@@ -138,7 +151,7 @@ export default function Footer() {
                   href="#layanan"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
-                  <i className="ph ph-caret-right text-xs"></i> Mobil Pengantin
+                  <PiCaretRight className="text-xs" /> Mobil Pengantin
                 </a>
               </li>
             </ul>
@@ -151,26 +164,26 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3">
               <li className="text-slate-400 text-sm flex items-start gap-2.5">
-                <i className="ph ph-map-pin text-accent text-lg mt-0.5 flex-shrink-0"></i>
+                <PiMapPin className="text-accent text-lg mt-0.5 flex-shrink-0" />
                 <span>
                   Jl. Pandega Marga, Manggung, Caturtunggal, Kec. Depok,
                   Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281
                 </span>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">
-                <i className="ph ph-phone text-accent text-lg flex-shrink-0"></i>
+                <PiPhone className="text-accent text-lg flex-shrink-0" />
                 <a href="tel:+6281234567890" className="hover:text-accent transition-colors">
                   +62 812-3456-7890
                 </a>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">
-                <i className="ph ph-envelope text-accent text-lg flex-shrink-0"></i>
+                <PiEnvelope className="text-accent text-lg flex-shrink-0" />
                 <a href="mailto:info@kgyk.com" className="hover:text-accent transition-colors">
                   info@kgyk.com
                 </a>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">
-                <i className="ph ph-clock text-accent text-lg flex-shrink-0"></i>
+                <PiClock className="text-accent text-lg flex-shrink-0" />
                 <span>Setiap Hari (24 Jam)</span>
               </li>
             </ul>

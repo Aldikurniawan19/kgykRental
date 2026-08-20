@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { PiHouse, PiCaretRight, PiMapPin, PiArrowRight } from "react-icons/pi";
 
 export const metadata: Metadata = {
   title: "Galeri Wisata",
@@ -71,9 +72,9 @@ export default function GaleriPage() {
               aria-label="Breadcrumb"
             >
               <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
-                <i className="ph ph-house"></i> Beranda
+                <PiHouse /> Beranda
               </Link>
-              <i className="ph ph-caret-right text-slate-500"></i>
+              <PiCaretRight className="text-slate-500" />
               <span className="text-white font-semibold">Galeri Wisata</span>
             </nav>
 
@@ -105,7 +106,7 @@ export default function GaleriPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
                   <div className="absolute bottom-4 left-4 right-4 z-10">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold rounded-full mb-2">
-                      <i className="ph ph-map-pin"></i> {dest.location}
+                      <PiMapPin /> {dest.location}
                     </span>
                     <h3 className="text-2xl font-bold text-white">{dest.name}</h3>
                   </div>
@@ -118,7 +119,8 @@ export default function GaleriPage() {
                     href="/katalog"
                     className="inline-flex items-center justify-center w-full px-4 py-3 border border-primary text-primary hover:bg-primary hover:text-white text-sm font-bold rounded-xl transition-colors gap-2"
                   >
-                    Pilih Mobil ke Sini <i className="ph ph-arrow-right"></i>
+                    <span>Pilih Mobil ke Sini</span>
+                    <PiArrowRight />
                   </a>
                 </div>
               </div>

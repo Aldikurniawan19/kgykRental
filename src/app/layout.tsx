@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Toast from "@/components/Toast";
@@ -33,12 +32,6 @@ export default function RootLayout({
       lang="id"
       className={`${plusJakartaSans.variable} scroll-smooth`}
     >
-      <head>
-        <Script
-          src="https://unpkg.com/@phosphor-icons/web"
-          strategy="afterInteractive"
-        />
-      </head>
       <body className="bg-lightbg text-slate-800 antialiased selection:bg-primary selection:text-white">
         {children}
         <AuthModals />

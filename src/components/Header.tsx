@@ -12,6 +12,13 @@ import {
   openRegisterModal,
   type AppUser,
 } from "@/lib/app";
+import {
+  PiCaretDown,
+  PiClockCounterClockwise,
+  PiSignOut,
+  PiList,
+  PiX,
+} from "react-icons/pi";
 
 export default function Header() {
   const pathname = usePathname();
@@ -191,15 +198,12 @@ export default function Header() {
           {/* Logo */}
           <div
             id="logo-container"
-            className="flex-shrink-0 flex items-center gap-2 cursor-pointer"
+            className="flex-shrink-0 flex items-center cursor-pointer"
             onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });
               closeMobileMenu();
             }}
           >
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-accent rounded-lg md:rounded-xl flex items-center justify-center text-navy shadow-sm transition-all duration-300">
-              <i className="ph ph-car-profile text-lg md:text-2xl"></i>
-            </div>
             <span
               id="logo-text"
               className="font-bold text-lg md:text-xl tracking-tight transition-all duration-300"
@@ -258,12 +262,12 @@ export default function Header() {
                   >
                     {user.fullName}
                   </span>
-                  <i
-                    className={`ph ph-caret-down text-xs transition-transform duration-300 ${
+                  <PiCaretDown
+                    className={`text-xs transition-transform duration-300 ${
                       dropdownOpen ? "rotate-180" : ""
                     }`}
                     id="dropdown-caret"
-                  ></i>
+                  />
                 </button>
 
                 {dropdownOpen && (
@@ -289,7 +293,7 @@ export default function Header() {
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary transition-all cursor-pointer"
                         onClick={() => setDropdownOpen(false)}
                       >
-                        <i className="ph ph-clock-counter-clockwise text-lg text-slate-400"></i>
+                        <PiClockCounterClockwise className="text-lg text-slate-400" />
                         <span>Riwayat Sewa</span>
                       </Link>
                     </div>
@@ -300,7 +304,7 @@ export default function Header() {
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-all cursor-pointer"
                         onClick={handleLogout}
                       >
-                        <i className="ph ph-sign-out text-lg"></i>
+                        <PiSignOut className="text-lg" />
                         <span>Keluar</span>
                       </button>
                     </div>
@@ -312,13 +316,13 @@ export default function Header() {
             <button
               id="mobile-menu-btn"
               ref={mobileBtnRef}
-              className="md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer"
+              className="md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer text-2xl"
               onClick={(e) => {
                 e.stopPropagation();
                 setMobileOpen((prev) => !prev);
               }}
             >
-              <i className={`ph text-2xl ${mobileOpen ? "ph-x" : "ph-list"}`}></i>
+              {mobileOpen ? <PiX /> : <PiList />}
             </button>
           </div>
         </div>
@@ -396,7 +400,7 @@ export default function Header() {
                   className="block px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-50 mobile-link flex items-center gap-2.5 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <i className="ph ph-clock-counter-clockwise text-lg text-slate-400"></i>{" "}
+                  <PiClockCounterClockwise className="text-lg text-slate-400" />{" "}
                   Riwayat Sewa
                 </Link>
                 <button
@@ -404,7 +408,7 @@ export default function Header() {
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2.5 cursor-pointer transition-colors"
                   onClick={handleLogout}
                 >
-                  <i className="ph ph-sign-out text-lg"></i> Keluar
+                  <PiSignOut className="text-lg" /> Keluar
                 </button>
               </div>
             )}

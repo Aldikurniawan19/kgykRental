@@ -9,6 +9,7 @@ import {
   showToast,
 } from "@/lib/app";
 import { formatRupiah } from "@/lib/format";
+import { PiCalendarCheck, PiWarningCircle, PiCheckCircle } from "react-icons/pi";
 
 export default function Stats() {
   const [dateStart, setDateStart] = useState("");
@@ -134,7 +135,7 @@ export default function Stats() {
     <section className="relative -mt-10 mx-4 sm:mx-6 lg:mx-8 z-20" data-gsap="fade-up">
       <div className="container mx-auto max-w-6xl bg-white p-6 md:p-8 rounded-2xl shadow-soft border border-slate-100">
         <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2">
-          <i className="ph ph-calendar-search text-primary text-xl"></i>
+          <PiCalendarCheck className="text-primary text-xl" />
           Cek Ketersediaan Mobil
         </h3>
 
@@ -206,7 +207,7 @@ export default function Stats() {
           <div className="mt-6 pt-6 border-t border-slate-100 animate-fade-in">
             {availableCars.length === 0 ? (
               <div className="bg-red-50 border border-red-100 rounded-2xl p-5 text-center text-red-700">
-                <i className="ph ph-warning-circle text-4xl block mb-2 text-red-500"></i>
+                <PiWarningCircle className="text-4xl mx-auto mb-2 text-red-500" />
                 <p className="font-semibold text-sm">
                   Mobil tidak tersedia pada jadwal tersebut. Silakan pilih tanggal lain.
                 </p>
@@ -214,7 +215,7 @@ export default function Stats() {
             ) : (
               <>
                 <h4 className="text-sm font-bold text-navy mb-4 flex items-center gap-1.5">
-                  <i className="ph ph-check-circle text-green-500 text-lg"></i>
+                  <PiCheckCircle className="text-green-500 text-lg" />
                   Pilihan Mobil Tersedia pada Jadwal Anda:
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

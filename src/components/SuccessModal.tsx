@@ -5,6 +5,14 @@ import Link from "next/link";
 import html2canvas from "html2canvas-pro";
 import { formatRupiah } from "@/lib/format";
 import type { Booking } from "@/lib/app";
+import {
+  PiCheck,
+  PiX,
+  PiSteeringWheelFill,
+  PiClockFill,
+  PiPrinter,
+  PiDownload,
+} from "react-icons/pi";
 
 export default function SuccessModal() {
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -105,7 +113,7 @@ export default function SuccessModal() {
         <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-t-3xl print:hidden">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-              <i className="ph-fill ph-check text-white text-xs font-bold"></i>
+              <PiCheck className="text-white text-xs font-bold" />
             </div>
             <span className="text-sm font-extrabold text-slate-800">
               Reservasi Berhasil!
@@ -115,7 +123,7 @@ export default function SuccessModal() {
             onClick={close}
             className="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
           >
-            <i className="ph ph-x text-lg"></i>
+            <PiX className="text-lg" />
           </button>
         </div>
 
@@ -127,7 +135,7 @@ export default function SuccessModal() {
           <div className="text-center border-b-2 border-dashed border-slate-200 pb-3 mb-3">
             <div className="flex items-center justify-center gap-2 mb-1">
               <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-                <i className="ph-fill ph-steering-wheel text-sm text-white"></i>
+                <PiSteeringWheelFill className="text-sm text-white" />
               </div>
               <span className="font-extrabold text-sm text-navy tracking-tight">
                 KGYK RENTAL MOBIL
@@ -263,7 +271,7 @@ export default function SuccessModal() {
 
           <div className="text-center mb-3">
             <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-              <i className="ph-fill ph-clock text-sm"></i> BELUM BAYAR
+              <PiClockFill className="text-sm" /> BELUM BAYAR
             </span>
           </div>
 
@@ -290,14 +298,14 @@ export default function SuccessModal() {
               onClick={() => window.print()}
               className="flex-1 py-3 px-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
             >
-              <i className="ph ph-printer text-lg"></i>
+              <PiPrinter className="text-lg" />
               Cetak Struk
             </button>
             <button
               onClick={handleDownload}
               className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
             >
-              <i className="ph ph-download text-lg"></i>
+              <PiDownload className="text-lg" />
               Unduh Gambar
             </button>
           </div>

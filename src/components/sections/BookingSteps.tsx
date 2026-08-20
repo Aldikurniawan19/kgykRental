@@ -1,29 +1,35 @@
 import SectionHeader from "@/components/ui/SectionHeader";
+import {
+  PiMagnifyingGlassFill,
+  PiFileTextFill,
+  PiCreditCardFill,
+  PiKeyFill,
+} from "react-icons/pi";
 
 const steps = [
   {
-    icon: "ph-fill ph-magnifying-glass",
+    icon: PiMagnifyingGlassFill,
     title: "Pilih Armada",
     desc: "Jelajahi katalog kami dan gunakan filter untuk menemukan mobil yang paling sesuai dengan kebutuhan Anda.",
     num: 1,
     isSpecial: false,
   },
   {
-    icon: "ph-fill ph-file-text",
+    icon: PiFileTextFill,
     title: "Isi Reservasi",
     desc: "Lengkapi form online dengan data diri, tanggal penyewaan, serta durasi pinjam dengan mudah & aman.",
     num: 2,
     isSpecial: false,
   },
   {
-    icon: "ph-fill ph-credit-card",
+    icon: PiCreditCardFill,
     title: "Verifikasi Data",
     desc: "Tim kami akan memverifikasi pesanan Anda. Selesaikan pembayaran DP setelah mendapat konfirmasi.",
     num: 3,
     isSpecial: false,
   },
   {
-    icon: "ph-fill ph-key",
+    icon: PiKeyFill,
     title: "Mobil Siap",
     desc: "Kendaraan bersih dan prima siap digunakan. Anda bisa ambil di garasi kami atau diantar ke lokasi.",
     num: 4,
@@ -47,25 +53,28 @@ export default function BookingSteps() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4 relative mt-10" data-gsap="stagger-cards">
           <div className="hidden lg:block absolute top-10 left-[12%] right-[12%] h-0.5 bg-transparent border-t-2 border-dashed border-slate-200 z-0"></div>
 
-          {steps.map((step) => (
-            <div
-              key={step.num}
-              className="relative flex flex-col items-center text-center group px-4"
-            >
+          {steps.map((step) => {
+            const Icon = step.icon;
+            return (
               <div
-                className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 relative z-10 shadow-soft border border-slate-100 transition-all duration-300 group-hover:-translate-y-2 text-primary text-3xl group-hover:bg-primary group-hover:text-white"
+                key={step.num}
+                className="relative flex flex-col items-center text-center group px-4"
               >
-                <i className={step.icon}></i>
                 <div
-                  className="absolute -top-3 -right-3 w-8 h-8 font-bold rounded-full flex items-center justify-center text-sm shadow-md bg-primary text-white"
+                  className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 relative z-10 shadow-soft border border-slate-100 transition-all duration-300 group-hover:-translate-y-2 text-primary text-3xl group-hover:bg-primary group-hover:text-white"
                 >
-                  {step.num}
+                  <Icon />
+                  <div
+                    className="absolute -top-3 -right-3 w-8 h-8 font-bold rounded-full flex items-center justify-center text-sm shadow-md bg-primary text-white"
+                  >
+                    {step.num}
+                  </div>
                 </div>
+                <h3 className="text-xl font-bold text-navy mb-3">{step.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{step.desc}</p>
               </div>
-              <h3 className="text-xl font-bold text-navy mb-3">{step.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

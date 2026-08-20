@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { cars, type Car } from "@/data/cars";
 import { showToast } from "@/lib/app";
 import { formatRupiah } from "@/lib/format";
+import {
+  PiX,
+  PiUsers,
+  PiGasPump,
+  PiSteeringWheel,
+  PiCheckCircleFill,
+} from "react-icons/pi";
 
 export default function CarDetailModal() {
   const [car, setCar] = useState<Car | null>(null);
@@ -63,7 +70,7 @@ export default function CarDetailModal() {
           onClick={close}
           className="absolute top-4 right-4 w-10 h-10 bg-white/50 backdrop-blur hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-800 transition-colors z-20 shadow-sm cursor-pointer"
         >
-          <i className="ph ph-x text-xl font-bold"></i>
+          <PiX className="text-xl font-bold" />
         </button>
 
         <div className="w-full md:w-1/2 h-64 md:h-auto min-h-[260px] relative bg-white flex items-center justify-center p-6 flex-shrink-0 border-b md:border-b-0 md:border-r border-slate-100">
@@ -90,14 +97,14 @@ export default function CarDetailModal() {
 
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6 pb-6 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <i className="ph text-primary ph-users text-lg"></i>{" "}
+              <PiUsers className="text-primary text-lg" />{" "}
               <span id="detailModalCapacity">{car.capacity}</span>
             </div>
             <div className="flex items-center gap-2">
-              <i className="ph text-primary ph-gas-pump text-lg"></i> Bensin
+              <PiGasPump className="text-primary text-lg" /> Bensin
             </div>
             <div className="flex items-center gap-2">
-              <i className="ph text-primary ph-steering-wheel text-lg"></i>{" "}
+              <PiSteeringWheel className="text-primary text-lg" />{" "}
               <span id="detailModalTrans">{car.trans}</span>
             </div>
           </div>
@@ -111,15 +118,15 @@ export default function CarDetailModal() {
             <h4 className="font-bold text-navy mb-2 text-lg">Fasilitas Termasuk</h4>
             <ul className="space-y-2 text-sm text-slate-600 mb-8">
               <li className="flex items-center gap-2">
-                <i className="ph-fill ph-check-circle text-green-500 text-lg"></i>{" "}
+                <PiCheckCircleFill className="text-green-500 text-lg" />{" "}
                 Asuransi All Risk (Bebas cemas)
               </li>
               <li className="flex items-center gap-2">
-                <i className="ph-fill ph-check-circle text-green-500 text-lg"></i>{" "}
+                <PiCheckCircleFill className="text-green-500 text-lg" />{" "}
                 Perawatan Berkala Standar Dealer
               </li>
               <li className="flex items-center gap-2">
-                <i className="ph-fill ph-check-circle text-green-500 text-lg"></i>{" "}
+                <PiCheckCircleFill className="text-green-500 text-lg" />{" "}
                 Dukungan Bantuan Darurat 24/7
               </li>
             </ul>

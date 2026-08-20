@@ -20,22 +20,25 @@ export default function GSAPInit() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Fade Up
+      // Custom ultra-smooth cubic-bezier ease
+      const smoothEase = "power3.out";
+
+      // 1. Fade Up (Smooth vertical slide)
       const revealElements = document.querySelectorAll<HTMLElement>("[data-gsap='fade-up']");
       revealElements.forEach((el) => {
         gsap.fromTo(
           el,
-          { opacity: 0, y: 28, force3D: true },
+          { opacity: 0, y: 22, force3D: true },
           {
             opacity: 1,
             y: 0,
-            duration: 0.95,
-            ease: "power3.out",
+            duration: 0.8,
+            ease: smoothEase,
             force3D: true,
             clearProps: "transform",
             scrollTrigger: {
               trigger: el,
-              start: "top 90%",
+              start: "top 92%",
               once: true,
             },
           }
@@ -47,17 +50,17 @@ export default function GSAPInit() {
       fadeLeftElements.forEach((el) => {
         gsap.fromTo(
           el,
-          { opacity: 0, x: 32, force3D: true },
+          { opacity: 0, x: 24, force3D: true },
           {
             opacity: 1,
             x: 0,
-            duration: 0.95,
-            ease: "power3.out",
+            duration: 0.85,
+            ease: smoothEase,
             force3D: true,
             clearProps: "transform",
             scrollTrigger: {
               trigger: el,
-              start: "top 90%",
+              start: "top 92%",
               once: true,
             },
           }
@@ -69,65 +72,64 @@ export default function GSAPInit() {
       fadeRightElements.forEach((el) => {
         gsap.fromTo(
           el,
-          { opacity: 0, x: -32, force3D: true },
+          { opacity: 0, x: -24, force3D: true },
           {
             opacity: 1,
             x: 0,
-            duration: 0.95,
-            ease: "power3.out",
+            duration: 0.85,
+            ease: smoothEase,
             force3D: true,
             clearProps: "transform",
             scrollTrigger: {
               trigger: el,
-              start: "top 90%",
+              start: "top 92%",
               once: true,
             },
           }
         );
       });
 
-      // 4. Zoom In
+      // 4. Zoom In (Subtle scale expansion)
       const zoomInElements = document.querySelectorAll<HTMLElement>("[data-gsap='zoom-in']");
       zoomInElements.forEach((el) => {
         gsap.fromTo(
           el,
-          { opacity: 0, scale: 0.95, force3D: true },
+          { opacity: 0, scale: 0.96, force3D: true },
           {
             opacity: 1,
             scale: 1,
-            duration: 1.05,
-            ease: "power3.out",
+            duration: 0.9,
+            ease: smoothEase,
             force3D: true,
             clearProps: "transform",
             scrollTrigger: {
               trigger: el,
-              start: "top 90%",
+              start: "top 92%",
               once: true,
             },
           }
         );
       });
 
-      // 5. Staggered Cards
+      // 5. Staggered Cards (Smooth sequential entrance)
       const staggerContainers = document.querySelectorAll<HTMLElement>("[data-gsap='stagger-cards']");
       staggerContainers.forEach((container) => {
         const cards = Array.from(container.children) as HTMLElement[];
         if (cards.length > 0) {
           gsap.fromTo(
             cards,
-            { opacity: 0, y: 24, scale: 0.98, force3D: true },
+            { opacity: 0, y: 20, force3D: true },
             {
               opacity: 1,
               y: 0,
-              scale: 1,
-              duration: 0.85,
-              stagger: 0.07,
-              ease: "power3.out",
+              duration: 0.75,
+              stagger: 0.08,
+              ease: "power2.out",
               force3D: true,
               clearProps: "transform",
               scrollTrigger: {
                 trigger: container,
-                start: "top 88%",
+                start: "top 90%",
                 once: true,
               },
             }

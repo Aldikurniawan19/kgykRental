@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -11,6 +11,20 @@ import SuccessModal from "@/components/SuccessModal";
 import { cars, type Car } from "@/data/cars";
 import { getBookings, getCurrentUser, openCarDetail, openLoginModal, showToast } from "@/lib/app";
 import { formatRupiah } from "@/lib/format";
+import {
+  PiHouse,
+  PiCaretRight,
+  PiMagnifyingGlass,
+  PiFunnel,
+  PiCalendarCheck,
+  PiMagnifyingGlassPlus,
+  PiArrowCounterClockwise,
+  PiInfo,
+  PiUsers,
+  PiGasPump,
+  PiSteeringWheel,
+  PiCar,
+} from "react-icons/pi";
 
 const filters = [
   { value: "all", label: "Semua Tipe" },
@@ -30,6 +44,12 @@ export default function KatalogPage() {
   const [checkStart, setCheckStart] = useState("");
   const [checkEnd, setCheckEnd] = useState("");
   const [dateChecked, setDateChecked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
+  }, []);
 
   const hasDates = !!checkStart && !!checkEnd;
 
@@ -142,9 +162,9 @@ export default function KatalogPage() {
               aria-label="Breadcrumb"
             >
               <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
-                <i className="ph ph-house"></i> Beranda
+                <PiHouse /> Beranda
               </Link>
-              <i className="ph ph-caret-right text-slate-500"></i>
+              <PiCaretRight className="text-slate-500" />
               <span className="text-white font-semibold">Katalog Mobil</span>
             </nav>
 
@@ -160,51 +180,92 @@ export default function KatalogPage() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20" data-gsap="fade-up">
-          <div className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100/80">
-            <div className="space-y-6">
-              <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between pb-6 border-b border-slate-100">
-                <div className="relative flex-grow max-w-md">
-                  <label htmlFor="searchInput" className="sr-only">
-                    Cari Mobil
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20" data-gsap="fade-up">
+          <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-xl border border-slate-100 max-w-5xl mx-auto space-y-3.5">
+            {/* Informative Hint */}
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 border-b border-slate-50 pb-2">
+              <PiInfo className="text-primary text-sm shrink-0" />
+              <span>Pilih tanggal sewa untuk mengecek ketersediaan mobil pada hari yang Anda inginkan:</span>
+            </div>
+
+            {/* Row 1: Search & Date Check Inputs */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center">
+              {/* Search Bar */}
+              <div className="md:col-span-5 relative">
+                <label htmlFor="searchInput" className="sr-only">
+                  Cari Mobil
+                </label>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Cari mobil (contoh: Avanza, Brio)..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs md:text-sm text-slate-800 transition-all placeholder:text-slate-400 font-medium"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                />
+                <PiMagnifyingGlass className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg" />
+              </div>
+
+              {/* Date Start & End Inputs */}
+              <div className="md:col-span-5 grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <label htmlFor="checkStartDate" className="absolute -top-2 left-3 px-1 bg-white text-[9px] font-bold text-slate-400 z-10">
+                    Mulai Sewa
                   </label>
                   <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Cari nama mobil..."
-                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm text-slate-800 placeholder-slate-400"
-                    value={searchVal}
-                    onChange={(e) => setSearchVal(e.target.value)}
+                    type="date"
+                    id="checkStartDate"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs text-slate-700 font-medium transition-all"
+                    value={checkStart}
+                    onChange={(e) => setCheckStart(e.target.value)}
                   />
-                  <i className="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl"></i>
                 </div>
-
-                <div className="flex items-center gap-2 shrink-0 justify-between sm:justify-end">
-                  <span className="text-xs text-slate-500 font-semibold whitespace-nowrap">
-                    <i className="ph ph-funnel text-sm"></i> Urutkan:
-                  </span>
-                  <select
-                    id="sortSelect"
-                    className="px-3 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-slate-50 focus:bg-white text-slate-700 text-xs font-bold cursor-pointer min-w-[150px]"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                  >
-                    <option value="recommended">Rekomendasi</option>
-                    <option value="price-asc">Harga Terendah</option>
-                    <option value="price-desc">Harga Tertinggi</option>
-                    <option value="capacity-desc">Kapasitas Terbesar</option>
-                  </select>
+                <div className="relative">
+                  <label htmlFor="checkEndDate" className="absolute -top-2 left-3 px-1 bg-white text-[9px] font-bold text-slate-400 z-10">
+                    Selesai Sewa
+                  </label>
+                  <input
+                    type="date"
+                    id="checkEndDate"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs text-slate-700 font-medium transition-all"
+                    value={checkEnd}
+                    onChange={(e) => setCheckEnd(e.target.value)}
+                  />
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2 pb-6 border-b border-slate-100 justify-start">
+              {/* Action Buttons */}
+              <div className="md:col-span-2 flex gap-1.5">
+                <button
+                  onClick={handleCheckAvailability}
+                  className="flex-grow py-2.5 px-3 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                >
+                  <PiCalendarCheck className="text-sm" />
+                  <span>Cari</span>
+                </button>
+                {(checkStart || checkEnd) && (
+                  <button
+                    onClick={handleResetAvailability}
+                    className="p-2.5 border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all cursor-pointer shrink-0"
+                    title="Reset Tanggal"
+                  >
+                    <PiArrowCounterClockwise className="text-sm" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Row 2: Category Filter Pills & Sort Select */}
+            <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+              {/* Category Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none w-full md:w-auto pb-1 md:pb-0">
                 {filters.map((filter) => (
                   <button
                     key={filter.value}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                       categoryFilter === filter.value
-                        ? "bg-primary text-white shadow-md active"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        ? "bg-navy text-white shadow-xs"
+                        : "bg-slate-100/80 text-slate-600 hover:bg-slate-200/70"
                     }`}
                     data-filter={filter.value}
                     onClick={() => setCategoryFilter(filter.value)}
@@ -214,76 +275,42 @@ export default function KatalogPage() {
                 ))}
               </div>
 
-              <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50">
-                <h3 className="text-sm font-bold text-navy mb-3 flex items-center gap-2">
-                  <i className="ph ph-calendar-check text-primary text-lg"></i>
-                  Cek Ketersediaan Tanggal Sewa
-                </h3>
-                <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-end">
-                  <div className="grid grid-cols-2 gap-3 flex-grow">
-                    <div>
-                      <label
-                        htmlFor="checkStartDate"
-                        className="block text-[10px] sm:text-xs font-semibold text-slate-600 mb-1.5"
-                      >
-                        Mulai Sewa
-                      </label>
-                      <input
-                        type="date"
-                        id="checkStartDate"
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white text-slate-700 text-xs"
-                        value={checkStart}
-                        onChange={(e) => setCheckStart(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="checkEndDate"
-                        className="block text-[10px] sm:text-xs font-semibold text-slate-600 mb-1.5"
-                      >
-                        Selesai Sewa
-                      </label>
-                      <input
-                        type="date"
-                        id="checkEndDate"
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white text-slate-700 text-xs"
-                        value={checkEnd}
-                        onChange={(e) => setCheckEnd(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 w-full lg:w-auto shrink-0">
-                    <button
-                      onClick={handleCheckAvailability}
-                      className="w-full lg:w-auto px-4 py-3 bg-primary hover:bg-blue-700 text-white text-[11px] sm:text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
-                    >
-                      <i className="ph ph-magnifying-glass-plus text-base"></i> Cari Mobil
-                      Ready
-                    </button>
-                    <button
-                      onClick={handleResetAvailability}
-                      className="w-full lg:w-auto px-4 py-3 border border-slate-200 text-slate-500 hover:bg-slate-50 text-[11px] sm:text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
-                      title="Reset tanggal"
-                    >
-                      <i className="ph ph-arrow-counter-clockwise text-base"></i> Reset
-                    </button>
-                  </div>
-                </div>
-
-                {availabilityMsg && (
-                  <div className="text-xs font-bold text-slate-600 mt-4 p-3 bg-blue-100/60 rounded-xl border border-blue-200/40 flex items-center gap-2 animate-fade-in">
-                    <i className="ph ph-info text-base text-primary"></i>
-                    <span>{availabilityMsg}</span>
-                  </div>
-                )}
+              {/* Sort Dropdown */}
+              <div className="w-full md:w-auto shrink-0">
+                <select
+                  id="sortSelect"
+                  className="w-full md:w-auto px-3 py-1.5 rounded-lg border border-slate-200/80 bg-slate-50 focus:bg-white text-slate-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="recommended">Urutkan: Rekomendasi</option>
+                  <option value="price-asc">Harga Terendah</option>
+                  <option value="price-desc">Harga Tertinggi</option>
+                  <option value="capacity-desc">Kapasitas Terbesar</option>
+                </select>
               </div>
             </div>
+
+            {availabilityMsg && (
+              <div className="text-xs font-semibold text-slate-600 p-2.5 bg-blue-50/70 rounded-xl border border-blue-100/60 flex items-center justify-between gap-2 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <PiInfo className="text-base text-primary shrink-0" />
+                  <span>{availabilityMsg}</span>
+                </div>
+                <button
+                  onClick={handleResetAvailability}
+                  className="text-xs text-primary font-bold hover:underline shrink-0 cursor-pointer"
+                >
+                  Reset Filter
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div id="catalogGrid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-gsap="stagger-cards">
-            {result.map((car, index) => {
+            {result.map((car) => {
               const statusBadge = car.status ? (
                 <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-200">
                   Tersedia
@@ -331,14 +358,14 @@ export default function KatalogPage() {
 
                       <div className="grid grid-cols-2 gap-y-2 mb-4 border-b border-slate-50 pb-4">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                          <i className="ph text-primary ph-users text-base"></i>{" "}
+                          <PiUsers className="text-primary text-base" />{" "}
                           {car.capacity}
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                          <i className="ph text-primary ph-gas-pump text-base"></i> Bensin
+                          <PiGasPump className="text-primary text-base" /> Bensin
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-600 col-span-2">
-                          <i className="ph text-primary ph-steering-wheel text-base"></i>{" "}
+                          <PiSteeringWheel className="text-primary text-base" />{" "}
                           {car.trans}
                         </div>
                       </div>
@@ -363,7 +390,7 @@ export default function KatalogPage() {
                           className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-primary transition-all cursor-pointer"
                           title="Lihat Detail"
                         >
-                          <i className="ph ph-info text-base"></i>
+                          <PiInfo className="text-base" />
                         </button>
                         <button
                           disabled={!car.status}
@@ -383,7 +410,7 @@ export default function KatalogPage() {
           {result.length === 0 && (
             <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm">
               <div className="w-20 h-20 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="ph ph-car text-4xl"></i>
+                <PiCar className="text-4xl" />
               </div>
               <h3 className="text-xl font-bold text-navy mb-2">Mobil Tidak Ditemukan</h3>
               <p className="text-slate-500 text-sm max-w-xs mx-auto">

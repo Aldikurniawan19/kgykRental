@@ -14,6 +14,17 @@ import {
   type Booking,
 } from "@/lib/app";
 import { formatRupiah } from "@/lib/format";
+import {
+  PiMapPinFill,
+  PiPhoneFill,
+  PiEnvelopeSimpleFill,
+  PiInstagramLogoFill,
+  PiFacebookLogoFill,
+  PiTwitterLogoFill,
+  PiLock,
+  PiUpload,
+  PiCheckCircle,
+} from "react-icons/pi";
 
 export default function BookingForm() {
   const [user, setUser] = useState<AppUser | null>(null);
@@ -231,7 +242,7 @@ _Pemesanan Kendaraan Online_
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <i className="ph-fill ph-map-pin"></i>
+                      <PiMapPinFill />
                     </div>
                     <div>
                       <h4 className="font-semibold mb-1">Alamat Kantor</h4>
@@ -243,7 +254,7 @@ _Pemesanan Kendaraan Online_
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <i className="ph-fill ph-phone"></i>
+                      <PiPhoneFill />
                     </div>
                     <div>
                       <h4 className="font-semibold mb-1">Telepon / WhatsApp</h4>
@@ -252,7 +263,7 @@ _Pemesanan Kendaraan Online_
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <i className="ph-fill ph-envelope-simple"></i>
+                      <PiEnvelopeSimpleFill />
                     </div>
                     <div>
                       <h4 className="font-semibold mb-1">Email</h4>
@@ -265,21 +276,24 @@ _Pemesanan Kendaraan Online_
               <div className="mt-12 flex gap-4 relative z-10">
                 <a
                   href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300"
+                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
+                  aria-label="Instagram"
                 >
-                  <i className="ph-fill ph-instagram-logo"></i>
+                  <PiInstagramLogoFill />
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300"
+                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
+                  aria-label="Facebook"
                 >
-                  <i className="ph-fill ph-facebook-logo"></i>
+                  <PiFacebookLogoFill />
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300"
+                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
+                  aria-label="Twitter"
                 >
-                  <i className="ph-fill ph-twitter-logo"></i>
+                  <PiTwitterLogoFill />
                 </a>
               </div>
             </div>
@@ -289,7 +303,7 @@ _Pemesanan Kendaraan Online_
               {!user ? (
                 <div className="w-full text-center py-10 flex flex-col items-center">
                   <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-6 border border-slate-200">
-                    <i className="ph ph-lock text-4xl"></i>
+                    <PiLock className="text-4xl" />
                   </div>
                   <h3 className="text-2xl font-bold text-navy mb-2">
                     Pemesanan Online Terkunci
@@ -419,7 +433,7 @@ _Pemesanan Kendaraan Online_
                             document.getElementById("formDoc")?.click()
                           }
                         >
-                          <i className="ph ph-upload text-2xl text-slate-400 mb-1"></i>
+                          <PiUpload className="text-2xl text-slate-400 mb-1 mx-auto" />
                           <p className="text-xs text-slate-500 font-semibold">
                             {docName
                               ? docName
@@ -463,7 +477,7 @@ _Pemesanan Kendaraan Online_
                       type="submit"
                       className="w-full flex justify-center items-center gap-2 py-4 px-8 border border-transparent rounded-xl shadow-sm text-base font-bold text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform hover:-translate-y-1 hover:shadow-lg cursor-pointer"
                     >
-                      <i className="ph ph-check-circle text-2xl"></i>
+                      <PiCheckCircle className="text-2xl" />
                       Konfirmasi Booking Mobil
                     </button>
                   </form>

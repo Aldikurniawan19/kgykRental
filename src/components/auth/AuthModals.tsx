@@ -8,6 +8,7 @@ import {
   notifyAuthChanged,
   showToast,
 } from "@/lib/app";
+import { PiX } from "react-icons/pi";
 
 export default function AuthModals() {
   const [loginOpen, setLoginOpen] = useState(false);
@@ -133,10 +134,10 @@ export default function AuthModals() {
           ></div>
           <div className="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 transform scale-100 opacity-100 transition-all duration-300 shadow-2xl border border-slate-100">
             <button
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl"
               onClick={() => setLoginOpen(false)}
             >
-              <i className="ph ph-x text-2xl"></i>
+              <PiX />
             </button>
             <h3 className="text-2xl font-bold text-navy mb-2">
               Masuk ke Akun Anda
@@ -211,10 +212,10 @@ export default function AuthModals() {
           ></div>
           <div className="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 transform scale-100 opacity-100 transition-all duration-300 shadow-2xl border border-slate-100">
             <button
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl"
               onClick={() => setRegisterOpen(false)}
             >
-              <i className="ph ph-x text-2xl"></i>
+              <PiX />
             </button>
             <h3 className="text-2xl font-bold text-navy mb-2">
               Daftar Akun Baru
