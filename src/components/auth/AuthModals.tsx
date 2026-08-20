@@ -6,11 +6,14 @@ import {
   notifyAuthChanged,
   showToast,
 } from "@/lib/app";
-import { PiX, PiEye, PiEyeSlash } from "react-icons/pi";
+import { PiX, PiEye, PiEyeSlash, PiSpinner } from "react-icons/pi";
 
 export default function AuthModals() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const [loginError, setLoginError] = useState<string | null>(null);
   const [registerError, setRegisterError] = useState<string | null>(null);
@@ -51,6 +54,8 @@ export default function AuthModals() {
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRegistering) return;
+    
     setRegisterError(null);
 
     const fullName = registerName.trim();
@@ -66,6 +71,8 @@ export default function AuthModals() {
       setRegisterError("Password dan konfirmasi password tidak cocok.");
       return;
     }
+
+    setIsRegistering(true);
 
     try {
       const res = await fetch("/api/users/register", {
@@ -99,15 +106,21 @@ export default function AuthModals() {
       showToast(`Pendaftaran berhasil! Selamat datang, ${fullName}.`, "success");
     } catch (err: any) {
       setRegisterError("Terjadi kesalahan sistem saat mendaftar.");
+    } finally {
+      setIsRegistering(false);
     }
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoggingIn) return;
+
     setLoginError(null);
 
     const email = loginEmail.trim().toLowerCase();
     const password = loginPassword;
+
+    setIsLoggingIn(true);
 
     try {
       const res = await fetch("/api/users/login", {
@@ -133,6 +146,8 @@ export default function AuthModals() {
       showToast(`Selamat datang kembali, ${user.fullName}!`, "success");
     } catch (err: any) {
       setLoginError("Terjadi kesalahan sistem saat login.");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -146,11 +161,12 @@ export default function AuthModals() {
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-navy/60 backdrop-blur-sm animate-fade-in"
-            onClick={() => setLoginOpen(false)}
+            onClick={() => !isLoggingIn && setLoginOpen(false)}
           ></div>
           <div className="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 transform scale-100 opacity-100 transition-all duration-300 shadow-2xl border border-slate-100">
             <button
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl"
+              disabled={isLoggingIn}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl disabled:opacity-50"
               onClick={() => setLoginOpen(false)}
             >
               <PiX />
@@ -176,6 +192,7 @@ export default function AuthModals() {
                 <input
                   type="email"
                   required
+                  disabled={isLoggingIn}
                   className={inputClass}
                   placeholder="nama@email.com"
                   value={loginEmail}
@@ -190,6 +207,7 @@ export default function AuthModals() {
                   <input
                     type={showLoginPassword ? "text" : "password"}
                     required
+                    disabled={isLoggingIn}
                     className={`${inputClass} pr-10`}
                     placeholder="••••••••"
                     value={loginPassword}
@@ -197,6 +215,7 @@ export default function AuthModals() {
                   />
                   <button
                     type="button"
+                    disabled={isLoggingIn}
                     onClick={() => setShowLoginPassword(!showLoginPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                     title={showLoginPassword ? "Sembunyikan Password" : "Tampilkan Password"}
@@ -211,15 +230,24 @@ export default function AuthModals() {
               </div>
               <button
                 type="submit"
-                className="w-full py-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-colors text-sm shadow-md cursor-pointer"
+                disabled={isLoggingIn}
+                className="w-full py-3 bg-primary hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl transition-all text-sm shadow-md cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Masuk
+                {isLoggingIn ? (
+                  <>
+                    <PiSpinner className="animate-spin text-lg" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  <span>Masuk</span>
+                )}
               </button>
             </form>
             <p className="text-slate-500 text-sm text-center mt-6">
               Belum punya akun?{" "}
               <button
-                className="text-primary font-semibold hover:underline cursor-pointer"
+                disabled={isLoggingIn}
+                className="text-primary font-semibold hover:underline cursor-pointer disabled:opacity-50"
                 onClick={() => {
                   setLoginError(null);
                   setLoginOpen(false);
@@ -238,11 +266,12 @@ export default function AuthModals() {
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-navy/60 backdrop-blur-sm animate-fade-in"
-            onClick={() => setRegisterOpen(false)}
+            onClick={() => !isRegistering && setRegisterOpen(false)}
           ></div>
           <div className="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 transform scale-100 opacity-100 transition-all duration-300 shadow-2xl border border-slate-100">
             <button
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl"
+              disabled={isRegistering}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer text-2xl disabled:opacity-50"
               onClick={() => setRegisterOpen(false)}
             >
               <PiX />
@@ -271,6 +300,7 @@ export default function AuthModals() {
                 <input
                   type="text"
                   required
+                  disabled={isRegistering}
                   className={inputClass}
                   placeholder="Nama lengkap Anda"
                   value={registerName}
@@ -284,6 +314,7 @@ export default function AuthModals() {
                 <input
                   type="email"
                   required
+                  disabled={isRegistering}
                   className={inputClass}
                   placeholder="nama@email.com"
                   value={registerEmail}
@@ -297,6 +328,7 @@ export default function AuthModals() {
                 <input
                   type="tel"
                   required
+                  disabled={isRegistering}
                   className={inputClass}
                   placeholder="0812xxxxxxxx"
                   value={registerPhone}
@@ -311,6 +343,7 @@ export default function AuthModals() {
                   <input
                     type={showRegisterPassword ? "text" : "password"}
                     required
+                    disabled={isRegistering}
                     className={`${inputClass} pr-10`}
                     placeholder="••••••••"
                     value={registerPassword}
@@ -318,6 +351,7 @@ export default function AuthModals() {
                   />
                   <button
                     type="button"
+                    disabled={isRegistering}
                     onClick={() => setShowRegisterPassword(!showRegisterPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                     title={showRegisterPassword ? "Sembunyikan Password" : "Tampilkan Password"}
@@ -338,6 +372,7 @@ export default function AuthModals() {
                   <input
                     type={showRegisterConfirmPassword ? "text" : "password"}
                     required
+                    disabled={isRegistering}
                     className={`${inputClass} pr-10`}
                     placeholder="••••••••"
                     value={registerConfirmPassword}
@@ -345,6 +380,7 @@ export default function AuthModals() {
                   />
                   <button
                     type="button"
+                    disabled={isRegistering}
                     onClick={() => setShowRegisterConfirmPassword(!showRegisterConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                     title={showRegisterConfirmPassword ? "Sembunyikan Password" : "Tampilkan Password"}
@@ -359,15 +395,24 @@ export default function AuthModals() {
               </div>
               <button
                 type="submit"
-                className="w-full py-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-colors text-sm shadow-md mt-2 cursor-pointer"
+                disabled={isRegistering}
+                className="w-full py-3 bg-primary hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl transition-all text-sm shadow-md mt-2 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Daftar Akun
+                {isRegistering ? (
+                  <>
+                    <PiSpinner className="animate-spin text-lg" />
+                    <span>Memproses Pendaftaran...</span>
+                  </>
+                ) : (
+                  <span>Daftar Akun</span>
+                )}
               </button>
             </form>
             <p className="text-slate-500 text-sm text-center mt-6">
               Sudah punya akun?{" "}
               <button
-                className="text-primary font-semibold hover:underline cursor-pointer"
+                disabled={isRegistering}
+                className="text-primary font-semibold hover:underline cursor-pointer disabled:opacity-50"
                 onClick={() => {
                   setRegisterError(null);
                   setRegisterOpen(false);

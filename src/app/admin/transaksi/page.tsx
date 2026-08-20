@@ -983,7 +983,14 @@ export default function AdminTransactionsPage() {
                   confirmBtnCls[confirmAction.variant]
                 }`}
               >
-                {actionLoading ? "Memproses..." : confirmAction.label}
+                {actionLoading ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  confirmAction.label
+                )}
               </button>
             </div>
           </div>
@@ -1407,9 +1414,16 @@ export default function AdminTransactionsPage() {
                 <button
                   type="submit"
                   disabled={addSubmitting}
-                  className="px-5 py-2.5 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl shadow-md cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 bg-primary hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl shadow-md cursor-pointer disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  {addSubmitting ? "Menyimpan..." : "Simpan Transaksi"}
+                  {addSubmitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      <span>Menyimpan Transaksi...</span>
+                    </>
+                  ) : (
+                    "Simpan Transaksi"
+                  )}
                 </button>
               </div>
             </form>

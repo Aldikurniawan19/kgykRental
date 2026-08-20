@@ -243,9 +243,16 @@ export default function AdminPengaturanPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {saving ? "Menyimpan..." : "Simpan Perubahan"}
+              {saving ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <span>Simpan Perubahan</span>
+              )}
             </button>
           </div>
         </form>

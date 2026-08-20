@@ -32,6 +32,7 @@ import {
   PiArrowRightBold,
   PiCalendarBlankFill,
   PiPaperclipFill,
+  PiSpinner,
 } from "react-icons/pi";
 
 function BookingFormContent() {
@@ -44,6 +45,7 @@ function BookingFormContent() {
   const [message, setMessage] = useState("");
   const [docName, setDocName] = useState("");
   const [showSplash, setShowSplash] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactSettings, setContactSettings] = useState({
     address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281",
     phone: "+62 881-0233-31644",
@@ -131,6 +133,7 @@ function BookingFormContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -153,6 +156,8 @@ function BookingFormContent() {
       showToast("Tanggal selesai tidak boleh sebelum tanggal mulai.", "error");
       return;
     }
+
+    setIsSubmitting(true);
 
     const diffDays = calculateDuration(dateStart, dateEnd) ?? 1;
 
@@ -277,6 +282,7 @@ Saya ingin mendiskusikan kesepakatan harga fix dan ketersediaan unit lebih lanju
 
     setTimeout(() => {
       setShowSplash(false);
+      setIsSubmitting(false);
       setFormCar("");
       setDateStart("");
       setDateEnd("");
@@ -458,10 +464,20 @@ Saya ingin mendiskusikan kesepakatan harga fix dan ketersediaan unit lebih lanju
               {/* Submit CTA Button */}
               <button
                 type="submit"
-                className="w-full py-3 sm:py-3.5 px-5 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-primary hover:bg-blue-700 shadow-md hover:shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer mt-1"
+                disabled={isSubmitting}
+                className="w-full py-3 sm:py-3.5 px-5 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-primary hover:bg-blue-700 disabled:bg-blue-400 shadow-md hover:shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed mt-1"
               >
-                <span>Konfirmasi Booking Sekarang</span>
-                <PiArrowRightBold className="text-sm" />
+                {isSubmitting ? (
+                  <>
+                    <PiSpinner className="animate-spin text-base" />
+                    <span>Memproses Booking...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Konfirmasi Booking Sekarang</span>
+                    <PiArrowRightBold className="text-sm" />
+                  </>
+                )}
               </button>
 
               {/* Compact Guarantees */}
