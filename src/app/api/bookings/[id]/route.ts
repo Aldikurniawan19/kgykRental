@@ -93,11 +93,7 @@ export async function PUT(
     }
 
     if (paymentMethodToUpdate !== undefined) {
-      await prisma.$executeRawUnsafe(
-        `UPDATE "Booking" SET "paymentMethod" = ?, "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = ?`,
-        paymentMethodToUpdate,
-        bookingId
-      );
+      dataToUpdate.paymentMethod = paymentMethodToUpdate;
     }
 
     let booking;

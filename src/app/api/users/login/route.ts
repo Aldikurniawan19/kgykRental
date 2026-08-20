@@ -17,30 +17,12 @@ export async function POST(req: Request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    let user: any = null;
-    try {
-      if ((prisma as any).user) {
-        user = await (prisma as any).user.findFirst({
-          where: {
-            email: cleanEmail,
-            password: password,
-          },
-        });
-      }
-    } catch {
-      // Fallback
-    }
-
-    if (!user) {
-      const userList: any[] = await prisma.$queryRawUnsafe(
-        `SELECT id, fullName, email, phone FROM "User" WHERE LOWER(email) = LOWER(?) AND password = ? LIMIT 1`,
-        cleanEmail,
-        password
-      );
-      if (userList && userList.length > 0) {
-        user = userList[0];
-      }
-    }
+    const user = await prisma.user.findFirst({
+      where: {
+        email: { equals: cleanEmail, mode: "insensitive" },
+        password: password,
+      },
+    });
 
     if (!user) {
       return NextResponse.json(

@@ -19,27 +19,9 @@ export async function POST(req: Request) {
     const cleanName = fullName.trim();
     const cleanPhone = phone ? phone.trim() : "";
 
-    // Check if user exists using Prisma client or raw query fallback
-    let existingUser: any = null;
-    try {
-      if ((prisma as any).user) {
-        existingUser = await (prisma as any).user.findFirst({
-          where: { email: cleanEmail },
-        });
-      }
-    } catch {
-      // Fallback
-    }
-
-    if (!existingUser) {
-      const existingList: any[] = await prisma.$queryRawUnsafe(
-        `SELECT id FROM "User" WHERE LOWER(email) = LOWER(?) LIMIT 1`,
-        cleanEmail
-      );
-      if (existingList && existingList.length > 0) {
-        existingUser = existingList[0];
-      }
-    }
+    const existingUser = await prisma.user.findFirst({
+      where: { email: { equals: cleanEmail, mode: "insensitive" } },
+    });
 
     if (existingUser) {
       return NextResponse.json(
@@ -48,37 +30,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Insert user into SQLite database
-    let createdUser: any = null;
-    try {
-      if ((prisma as any).user) {
-        createdUser = await (prisma as any).user.create({
-          data: {
-            fullName: cleanName,
-            email: cleanEmail,
-            phone: cleanPhone,
-            password: password,
-          },
-        });
-      }
-    } catch {
-      // Fallback
-    }
-
-    if (!createdUser) {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO "User" ("fullName", "email", "phone", "password", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-        cleanName,
-        cleanEmail,
-        cleanPhone,
-        password
-      );
-      const createdList: any[] = await prisma.$queryRawUnsafe(
-        `SELECT id, fullName, email, phone FROM "User" WHERE LOWER(email) = LOWER(?) LIMIT 1`,
-        cleanEmail
-      );
-      createdUser = createdList[0];
-    }
+    const createdUser = await prisma.user.create({
+      data: {
+        fullName: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        password: password,
+      },
+    });
 
     return NextResponse.json(
       {

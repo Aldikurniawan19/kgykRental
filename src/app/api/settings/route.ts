@@ -13,15 +13,14 @@ export async function GET() {
   await ensureDbInitialized();
 
   try {
-    const rows: any[] = await prisma.$queryRawUnsafe(
-      `SELECT * FROM "Setting" WHERE "id" = 1 LIMIT 1`
-    );
+    const setting = await prisma.setting.findUnique({
+      where: { id: 1 },
+    });
 
-    if (!rows || rows.length === 0) {
+    if (!setting) {
       return NextResponse.json(DEFAULT_SETTINGS);
     }
 
-    const setting = rows[0];
     return NextResponse.json({
       phone: setting.phone || DEFAULT_SETTINGS.phone,
       whatsapp: setting.whatsapp || DEFAULT_SETTINGS.whatsapp,
@@ -52,27 +51,29 @@ export async function POST(request: Request) {
     const finalEmail = email || DEFAULT_SETTINGS.email;
     const finalAddress = address || DEFAULT_SETTINGS.address;
 
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO "Setting" ("id", "phone", "whatsapp", "email", "address", "updatedAt")
-       VALUES (1, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-       ON CONFLICT("id") DO UPDATE SET
-         "phone" = excluded."phone",
-         "whatsapp" = excluded."whatsapp",
-         "email" = excluded."email",
-         "address" = excluded."address",
-         "updatedAt" = CURRENT_TIMESTAMP`,
-      finalPhone,
-      finalWa,
-      finalEmail,
-      finalAddress
-    );
+    const updated = await prisma.setting.upsert({
+      where: { id: 1 },
+      update: {
+        phone: finalPhone,
+        whatsapp: finalWa,
+        email: finalEmail,
+        address: finalAddress,
+      },
+      create: {
+        id: 1,
+        phone: finalPhone,
+        whatsapp: finalWa,
+        email: finalEmail,
+        address: finalAddress,
+      },
+    });
 
     return NextResponse.json({
-      id: 1,
-      phone: finalPhone,
-      whatsapp: finalWa,
-      email: finalEmail,
-      address: finalAddress,
+      id: updated.id,
+      phone: updated.phone,
+      whatsapp: updated.whatsapp,
+      email: updated.email,
+      address: updated.address,
     });
   } catch (error) {
     console.error("POST /api/settings error:", error);

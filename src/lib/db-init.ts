@@ -166,13 +166,17 @@ export async function ensureDbInitialized() {
 
     // Seed default setting row if empty
     try {
-      const settingList: any[] = await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM "Setting"`);
-      const count = Number(settingList?.[0]?.count || 0);
+      const count = await prisma.setting.count();
       if (count === 0) {
-        await prisma.$executeRawUnsafe(`
-          INSERT INTO "Setting" ("id", "phone", "whatsapp", "email", "address", "updatedAt")
-          VALUES (1, '+62 881-0233-31644', '62881023331644', 'info@kgykrental.com', 'Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281', CURRENT_TIMESTAMP);
-        `);
+        await prisma.setting.create({
+          data: {
+            id: 1,
+            phone: "+62 881-0233-31644",
+            whatsapp: "62881023331644",
+            email: "info@kgykrental.com",
+            address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281",
+          },
+        });
       }
     } catch (settingErr) {
       console.warn("Setting seeding warning:", settingErr);
@@ -180,15 +184,24 @@ export async function ensureDbInitialized() {
 
     // 5. Seed initial Users if User table is empty
     try {
-      const userList: any[] = await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM "User"`);
-      const count = Number(userList?.[0]?.count || 0);
+      const count = await prisma.user.count();
       if (count === 0) {
-        await prisma.$executeRawUnsafe(`
-          INSERT INTO "User" ("fullName", "email", "phone", "password", "createdAt", "updatedAt")
-          VALUES 
-          ('Aldi Kurniawan', 'aldi@gmail.com', '081234567890', 'password123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-          ('Budi Santoso', 'budi@yahoo.com', '085678901234', 'password123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-        `);
+        await prisma.user.createMany({
+          data: [
+            {
+              fullName: "Aldi Kurniawan",
+              email: "aldi@gmail.com",
+              phone: "081234567890",
+              password: "password123",
+            },
+            {
+              fullName: "Budi Santoso",
+              email: "budi@yahoo.com",
+              phone: "085678901234",
+              password: "password123",
+            },
+          ],
+        });
       }
     } catch (userErr) {
       console.warn("User seeding warning:", userErr);
