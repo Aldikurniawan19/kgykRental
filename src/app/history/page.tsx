@@ -335,13 +335,14 @@ export default function HistoryPage() {
       <Header />
 
       <main className="min-h-screen bg-slate-50/60 font-sans pt-0">
-        {/* Compact Hero Banner */}
-        <section className="relative bg-gradient-to-r from-navy via-slate-900 to-navy text-white pt-20 pb-8 md:pt-28 md:pb-12 overflow-hidden">
+        {/* Full Header-Aligned Hero Banner */}
+        <section className="relative bg-gradient-to-r from-navy via-slate-900 to-navy text-white pt-24 pb-10 md:pt-32 md:pb-16 overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
 
-          <div className="container mx-auto px-3 sm:px-6 lg:px-8 relative z-10 max-w-3xl">
-            <nav className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-300 mb-2" aria-label="Breadcrumb">
+          {/* Standard container matching Navbar container alignment */}
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <nav className="flex items-center gap-1.5 text-xs text-slate-300 mb-2" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
                 <PiHouse /> Beranda
               </Link>
@@ -349,68 +350,68 @@ export default function HistoryPage() {
               <span className="text-white font-semibold">Riwayat Pemesanan</span>
             </nav>
 
-            <div className="max-w-2xl">
-              <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight mb-1 animate-fade-in">
+            <div className="max-w-3xl">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-1.5 animate-fade-in">
                 Riwayat <span className="text-accent">Pemesanan Mobil</span>
               </h1>
-              <p className="text-xs text-slate-300 leading-relaxed mb-0">
-                Daftar transaksi dan status penyewaan kendaraan Anda.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-0">
+                Pantau daftar transaksi, status penyewaan, dan unduh nota atau struk kendaraan Anda.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Seamless Content Section */}
-        <section className="container mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 relative z-20 max-w-3xl">
+        {/* Content Section Aligned Perfectly with Navbar Container */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-24 relative z-20">
           {!isMounted ? (
-            <div className="text-center py-12">
+            <div className="text-center py-16">
               <div className="animate-pulse flex flex-col items-center">
-                <div className="w-10 h-10 bg-slate-200 rounded-full mb-2"></div>
-                <div className="h-3 w-28 bg-slate-200 rounded"></div>
+                <div className="w-12 h-12 bg-slate-200 rounded-full mb-3"></div>
+                <div className="h-4 w-36 bg-slate-200 rounded"></div>
               </div>
             </div>
           ) : !user ? (
-            <div className="py-12 text-center flex flex-col items-center">
-              <div className="w-14 h-14 bg-white text-primary rounded-2xl flex items-center justify-center mb-3 shadow-xs border border-slate-200/80">
-                <PiLock className="text-2xl" />
+            <div className="py-16 text-center flex flex-col items-center">
+              <div className="w-16 h-16 bg-white text-primary rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-slate-200">
+                <PiLock className="text-3xl" />
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-navy mb-1">Akses Terkunci</h3>
-              <p className="text-slate-500 text-xs max-w-xs mb-5 leading-relaxed">
-                Silakan masuk ke akun Anda terlebih dahulu untuk melihat riwayat pemesanan.
+              <h3 className="text-lg sm:text-xl font-bold text-navy mb-1.5">Akses Terkunci</h3>
+              <p className="text-slate-500 text-xs sm:text-sm max-w-sm mb-6 leading-relaxed">
+                Silakan masuk ke akun Anda terlebih dahulu untuk melihat riwayat pemesanan kendaraan.
               </p>
-              <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => openLoginModal()}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-all shadow-md cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md cursor-pointer"
                 >
                   Masuk Akun
                 </button>
                 <button
                   onClick={() => openRegisterModal()}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs transition-all cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs sm:text-sm transition-all cursor-pointer"
                 >
-                  Daftar Baru
+                  Daftar Akun Baru
                 </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               
-              {/* Top Control Bar resting directly on background */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
+              {/* Top Control Bar resting directly on background, spanning full container width */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
                 <div>
-                  <h2 className="text-base sm:text-lg font-extrabold text-navy">
+                  <h2 className="text-lg sm:text-2xl font-extrabold text-navy">
                     Daftar Reservasi Anda
                   </h2>
-                  <p className="text-slate-500 text-[11px] sm:text-xs">
-                    Total <strong className="text-navy">{allBookings.length}</strong> transaksi pemesanan
+                  <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+                    Menampilkan total <strong className="text-navy">{allBookings.length}</strong> transaksi pemesanan
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-200/60 p-1 rounded-xl shrink-0 self-start sm:self-auto">
+                <div className="flex items-center gap-1.5 bg-slate-200/70 p-1.5 rounded-xl shrink-0 self-start sm:self-auto">
                   <button
                     onClick={() => setFilterTab("all")}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       filterTab === "all"
                         ? "bg-primary text-white shadow-xs"
                         : "text-slate-600 hover:text-navy"
@@ -420,7 +421,7 @@ export default function HistoryPage() {
                   </button>
                   <button
                     onClick={() => setFilterTab("active")}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       filterTab === "active"
                         ? "bg-primary text-white shadow-xs"
                         : "text-slate-600 hover:text-navy"
@@ -430,7 +431,7 @@ export default function HistoryPage() {
                   </button>
                   <button
                     onClick={() => setFilterTab("completed")}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       filterTab === "completed"
                         ? "bg-primary text-white shadow-xs"
                         : "text-slate-600 hover:text-navy"
@@ -442,28 +443,28 @@ export default function HistoryPage() {
               </div>
 
               {filteredBookings.length === 0 ? (
-                <div className="text-center py-12 px-4 bg-white/60 backdrop-blur-xs rounded-2xl border border-slate-200/80">
-                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2.5 text-slate-400">
-                    <PiCalendarBlank className="text-2xl text-slate-400" />
+                <div className="text-center py-16 px-4 bg-white/70 backdrop-blur-xs rounded-2xl border border-slate-200">
+                  <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+                    <PiCalendarBlank className="text-3xl text-slate-400" />
                   </div>
-                  <h4 className="text-navy font-bold text-sm mb-1">
+                  <h4 className="text-navy font-bold text-base mb-1">
                     Belum Ada Pemesanan
                   </h4>
-                  <p className="text-slate-500 text-xs max-w-xs mx-auto mb-4">
+                  <p className="text-slate-500 text-xs sm:text-sm max-w-sm mx-auto mb-5">
                     {filterTab === "all"
                       ? "Anda belum memesan kendaraan apapun. Pilih armada favorit Anda dan mulai perjalanan!"
                       : "Tidak ada riwayat pemesanan pada kategori ini."}
                   </p>
                   <Link
                     href="/katalog"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-all shadow-xs"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm"
                   >
                     Cari Mobil Sekarang
                   </Link>
                 </div>
               ) : (
-                /* Items with Booking Code at the very top */
-                <div className="space-y-3">
+                /* Grid 2-Column Desktop Layout spanning full navbar container width */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {filteredBookings.map((b) => {
                     const statusClass = getStatusClass(b.status);
                     const hasLateFee = Boolean(b.lateFee && b.lateFee > 0);
@@ -476,40 +477,40 @@ export default function HistoryPage() {
                     return (
                       <div
                         key={b.id}
-                        className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 hover:border-slate-300 transition-all shadow-xs"
+                        className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 hover:border-slate-300 transition-all shadow-xs hover:shadow-md flex flex-col justify-between"
                       >
                         {/* 1. TOP ROW: Booking Code & Service Type */}
-                        <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className="text-xs font-mono font-black text-primary bg-blue-50/80 px-2.5 py-0.5 rounded-md border border-blue-100">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-xs sm:text-sm font-mono font-black text-primary bg-blue-50 px-3 py-1 rounded-lg border border-blue-100/90">
                             {b.bookingCode || `#${b.id.toString().slice(-6)}`}
                           </span>
-                          <span className="text-[11px] font-bold text-slate-400">
+                          <span className="text-xs font-bold text-slate-500">
                             {b.serviceType}
                           </span>
                         </div>
 
-                        {/* 2. SECOND ROW: Status Badges */}
-                        <div className="flex items-center gap-1.5 mb-3 pb-2.5 border-b border-slate-100">
+                        {/* 2. SECOND ROW: Status & Payment Badges */}
+                        <div className="flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-slate-100">
                           <span
-                            className={`px-2 py-0.5 inline-flex items-center gap-1 text-[10px] font-bold rounded-full border ${statusClass}`}
+                            className={`px-3 py-0.5 inline-flex items-center gap-1.5 text-xs font-bold rounded-full border ${statusClass}`}
                           >
                             {renderStatusIcon(b.status)}
                             {b.status}
                           </span>
                           {b.paymentStatus === "Lunas" ? (
-                            <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200/60 rounded-full px-2 py-0.5">
-                              Lunas
+                            <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200/70 rounded-full px-2.5 py-0.5">
+                              ✓ Lunas
                             </span>
                           ) : (
-                            <span className="text-[10px] font-extrabold text-amber-600 bg-amber-50 border border-amber-200/60 rounded-full px-2 py-0.5">
-                              Belum Bayar
+                            <span className="text-xs font-extrabold text-amber-600 bg-amber-50 border border-amber-200/70 rounded-full px-2.5 py-0.5">
+                              🔒 Belum Bayar
                             </span>
                           )}
                         </div>
 
-                        {/* 3. MAIN CONTENT: Car Image & Info */}
-                        <div className="flex items-center gap-3">
-                          <div className="w-20 sm:w-24 h-14 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-1 shrink-0">
+                        {/* 3. MAIN CONTENT: Car Thumbnail & Details */}
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-24 sm:w-32 h-16 sm:h-22 bg-slate-50 rounded-xl border border-slate-200/70 flex items-center justify-center p-1.5 shrink-0">
                             <img
                               src={carImg}
                               alt={b.carName}
@@ -518,18 +519,18 @@ export default function HistoryPage() {
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <h4 className="text-xs sm:text-sm font-extrabold text-navy truncate">
+                            <h4 className="text-sm sm:text-base font-extrabold text-navy truncate">
                               {b.carName}
                             </h4>
-                            <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                            <p className="text-xs text-slate-600 truncate mt-1">
                               📅 {formatDateShort(b.startDate)} - {formatDateShort(b.endDate)} ({b.duration} Hari)
                             </p>
-                            <p className="text-[10px] text-slate-400 truncate mt-0.5">
-                              📍 Lokasi: {b.pickupLocation || "Kantor KGYK Yogyakarta"}
+                            <p className="text-[11px] sm:text-xs text-slate-400 truncate mt-0.5">
+                              📍 Ambil: {b.pickupLocation || "Kantor KGYK Yogyakarta"}
                             </p>
 
                             {hasLateFee && (
-                              <div className="text-[10px] font-bold text-red-600 mt-0.5">
+                              <div className="text-xs font-bold text-red-600 mt-1">
                                 Denda ({b.lateFeeHours} jam): +{formatRupiah(b.lateFee!)}
                               </div>
                             )}
@@ -537,28 +538,28 @@ export default function HistoryPage() {
                         </div>
 
                         {/* 4. FOOTER: Total Price & Actions */}
-                        <div className="pt-2.5 mt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
                           <div>
-                            <span className="text-[9px] font-bold text-slate-400 uppercase">Total</span>
-                            <p className="text-xs sm:text-sm font-extrabold text-navy">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Biaya</span>
+                            <p className="text-sm sm:text-lg font-black text-navy leading-tight">
                               {formatRupiah(b.grandTotal || b.totalPrice)}
                             </p>
                           </div>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <button
                               onClick={() => setActiveBooking(b)}
-                              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
                             >
-                              <PiReceipt className="text-sm" /> Struk
+                              <PiReceipt className="text-base" /> Struk
                             </button>
 
                             {b.status === "Selesai" && (
                               <Link
                                 href={`/booking?car=${encodeURIComponent(b.carName)}`}
-                                className="px-3 py-1.5 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+                                className="px-3.5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
                               >
-                                <PiArrowCounterClockwise className="text-xs" /> Pesan Lagi
+                                <PiArrowCounterClockwise className="text-sm" /> Pesan Lagi
                               </Link>
                             )}
                           </div>
@@ -576,13 +577,13 @@ export default function HistoryPage() {
 
       {/* Digital Receipt Modal */}
       {activeBooking && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-navy/60 backdrop-blur-sm transition-opacity"
             onClick={closeReceiptModal}
           ></div>
           <div className="bg-white rounded-2xl sm:rounded-3xl max-w-md w-full relative z-10 transform scale-100 opacity-100 transition-all duration-300 shadow-2xl flex flex-col max-h-[92vh]">
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-t-2xl sm:rounded-t-3xl print:hidden">
+            <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-t-2xl sm:rounded-t-3xl print:hidden">
               <span className="text-xs sm:text-sm font-extrabold text-slate-800">
                 Struk Reservasi Kendaraan
               </span>
@@ -596,21 +597,13 @@ export default function HistoryPage() {
 
             {renderReceipt(activeBooking)}
 
-            <div className="px-4 pb-4 pt-1 flex flex-col gap-2 print:hidden">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => window.print()}
-                  className="flex-1 py-2.5 px-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm text-xs cursor-pointer"
-                >
-                  <PiPrinter className="text-sm" /> Cetak
-                </button>
-                <button
-                  onClick={handleDownload}
-                  className="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm text-xs cursor-pointer"
-                >
-                  <PiDownload className="text-sm" /> Unduh Gambar
-                </button>
-              </div>
+            <div className="px-5 pb-5 pt-1 flex flex-col gap-2 print:hidden">
+              <button
+                onClick={handleDownload}
+                className="w-full py-2.5 px-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-xs sm:text-sm cursor-pointer"
+              >
+                <PiDownload className="text-base" /> Unduh Gambar Struk
+              </button>
               <button
                 onClick={closeReceiptModal}
                 className="w-full py-2 px-3 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-all text-xs cursor-pointer"
