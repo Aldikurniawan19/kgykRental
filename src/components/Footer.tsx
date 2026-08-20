@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   PiInstagramLogo,
   PiFacebookLogo,
@@ -11,6 +14,32 @@ import {
 } from "react-icons/pi";
 
 export default function Footer() {
+  const [settings, setSettings] = useState({
+    address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281",
+    phone: "+62 881-0233-31644",
+    email: "info@kgykrental.com",
+    whatsapp: "62881023331644",
+  });
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setSettings({
+            address: data.address || settings.address,
+            phone: data.phone || settings.phone,
+            email: data.email || settings.email,
+            whatsapp: data.whatsapp || settings.whatsapp,
+          });
+        }
+      })
+      .catch((err) => console.error("Footer fetch settings error:", err));
+  }, []);
+
+  const cleanWaNumber = settings.whatsapp.replace(/[^0-9]/g, "");
+  const waUrl = `https://wa.me/${cleanWaNumber.startsWith("0") ? "62" + cleanWaNumber.slice(1) : cleanWaNumber}`;
+
   return (
     <footer className="bg-navy pt-20 pb-10 border-t border-slate-800 font-sans">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,7 +79,9 @@ export default function Footer() {
                 <PiYoutubeLogo className="text-lg" />
               </a>
               <a
-                href="#"
+                href={waUrl}
+                target="_blank"
+                rel="noreferrer"
                 className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-accent text-slate-400 hover:text-navy flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1"
                 aria-label="WhatsApp"
               >
@@ -165,21 +196,18 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="text-slate-400 text-sm flex items-start gap-2.5">
                 <PiMapPin className="text-accent text-lg mt-0.5 flex-shrink-0" />
-                <span>
-                  Jl. Pandega Marga, Manggung, Caturtunggal, Kec. Depok,
-                  Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281
-                </span>
+                <span>{settings.address}</span>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">
                 <PiPhone className="text-accent text-lg flex-shrink-0" />
-                <a href="tel:+6281234567890" className="hover:text-accent transition-colors">
-                  +62 812-3456-7890
+                <a href={`tel:${settings.phone.replace(/[^0-9+]/g, "")}`} className="hover:text-accent transition-colors">
+                  {settings.phone}
                 </a>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">
                 <PiEnvelope className="text-accent text-lg flex-shrink-0" />
-                <a href="mailto:info@kgyk.com" className="hover:text-accent transition-colors">
-                  info@kgyk.com
+                <a href={`mailto:${settings.email}`} className="hover:text-accent transition-colors">
+                  {settings.email}
                 </a>
               </li>
               <li className="text-slate-400 text-sm flex items-center gap-2.5">

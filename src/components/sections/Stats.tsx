@@ -79,9 +79,10 @@ export default function Stats() {
     const carsToCheck =
       carSelect === "all" ? cars : cars.filter((c) => c.name === carSelect);
 
+    const activeStatuses = ["Menunggu Verifikasi", "Disetujui", "Dalam Penyewaan"];
     const available = carsToCheck.filter((car) => {
       const hasConflict = bookings.some((b) => {
-        if (b.carName === car.name && b.status !== "Ditolak") {
+        if (b.carName === car.name && activeStatuses.includes(b.status)) {
           const existingStart = new Date(b.startDate);
           const existingEnd = new Date(b.endDate);
           return start <= existingEnd && end >= existingStart;

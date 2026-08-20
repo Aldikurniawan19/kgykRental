@@ -61,21 +61,61 @@ export default function HistoryPage() {
   const [user, setUser] = useState<AppUser | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [filterTab, setFilterTab] = useState<"all" | "active" | "completed">("all");
+  const [dbBookings, setDbBookings] = useState<Booking[]>([]);
+  const [contactSettings, setContactSettings] = useState({
+    address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, DIY 55281",
+    phone: "+62 881-0233-31644",
+    email: "info@kgykrental.com",
+  });
   const receiptPrintAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
-    setUser(getCurrentUser());
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setContactSettings({
+            address: data.address || "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, DIY 55281",
+            phone: data.phone || "+62 881-0233-31644",
+            email: data.email || "info@kgykrental.com",
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch settings in History page:", err));
+
+    const loadLiveBookings = async () => {
+      try {
+        const res = await fetch("/api/bookings");
+        if (res.ok) {
+          const data = await res.json();
+          setDbBookings(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch live bookings for history:", err);
+      }
+    };
+
+    loadLiveBookings();
 
     const handleAuth = () => {
       setUser(getCurrentUser());
+      loadLiveBookings();
     };
     window.addEventListener("auth-changed", handleAuth);
     return () => window.removeEventListener("auth-changed", handleAuth);
   }, []);
 
+  const localBookings = user ? getBookings().filter((b) => b.userEmail === user.email) : [];
+  
+  // Merge live DB bookings with local storage, preferring live DB
   const allBookings = user
-    ? getBookings().filter((b) => b.userEmail === user.email)
+    ? dbBookings.length > 0
+      ? dbBookings.filter((b) => b.userEmail?.toLowerCase() === user.email.toLowerCase())
+      : localBookings
     : ([] as Booking[]);
 
   const filteredBookings = allBookings.filter((b) => {
@@ -155,9 +195,9 @@ export default function HistoryPage() {
             </span>
           </div>
           <p className="text-[9px] text-slate-400 font-medium leading-relaxed font-sans">
-            Jl. Pandega Marga, Caturtunggal, Kec. Depok, Sleman, DIY 55281
+            {contactSettings.address}
             <br />
-            Telp/WA: +62 812 3456 7890 • Email: cs@kgyk.com
+            Telp/WA: {contactSettings.phone} • Email: {contactSettings.email}
           </p>
         </div>
 

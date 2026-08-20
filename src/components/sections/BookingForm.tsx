@@ -24,15 +24,49 @@ import {
   PiLock,
   PiUpload,
   PiCheckCircle,
+  PiCheckCircleFill,
 } from "react-icons/pi";
 
 export default function BookingForm() {
   const [user, setUser] = useState<AppUser | null>(null);
+  const [carList, setCarList] = useState(cars);
   const [formCar, setFormCar] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [message, setMessage] = useState("");
   const [docName, setDocName] = useState("");
+  const [showSplash, setShowSplash] = useState(false);
+  const [contactSettings, setContactSettings] = useState({
+    address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281",
+    phone: "+62 881-0233-31644",
+    email: "info@kgykrental.com",
+    whatsapp: "62881023331644",
+  });
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setContactSettings({
+            address: data.address || "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281",
+            phone: data.phone || "+62 881-0233-31644",
+            email: data.email || "info@kgykrental.com",
+            whatsapp: data.whatsapp || "62881023331644",
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch contact settings:", err));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/cars")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.length > 0) setCarList(data);
+      })
+      .catch((err) => console.error("Failed to fetch live cars for booking form:", err));
+  }, []);
 
   useEffect(() => {
     const updateAuth = () => setUser(getCurrentUser());
@@ -103,7 +137,7 @@ export default function BookingForm() {
     }, 300);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const currentUser = getCurrentUser();
@@ -114,7 +148,7 @@ export default function BookingForm() {
 
     if (!formCar || !dateStart || !dateEnd) return;
 
-    const car = cars.find((c) => c.name === formCar);
+    const car = carList.find((c) => c.name === formCar);
     if (!car) {
       showToast("Silakan pilih kendaraan.", "error");
       return;
@@ -130,9 +164,10 @@ export default function BookingForm() {
 
     const diffDays = calculateDuration(dateStart, dateEnd) ?? 1;
 
+    const activeStatuses = ["Menunggu Verifikasi", "Disetujui", "Dalam Penyewaan"];
     const bookings = getBookings();
     const isConflicted = bookings.some((b) => {
-      if (b.carName === formCar && b.status !== "Ditolak") {
+      if (b.carName === formCar && activeStatuses.includes(b.status)) {
         const existingStart = new Date(b.startDate);
         const existingEnd = new Date(b.endDate);
         return start <= existingEnd && end >= existingStart;
@@ -151,7 +186,7 @@ export default function BookingForm() {
     const bookingCode = generateBookingCode();
     const totalPrice = car.price * diffDays;
 
-    const newBooking: Booking = {
+    let newBooking: Booking = {
       id: Date.now(),
       bookingCode,
       userEmail: currentUser.email,
@@ -162,8 +197,8 @@ export default function BookingForm() {
       endDate: dateEnd,
       duration: diffDays,
       serviceType: "Sewa Mobil",
-      pickupLocation: "-",
-      dropoffLocation: "-",
+      pickupLocation: "Kantor KGYK Yogyakarta",
+      dropoffLocation: "Kantor KGYK Yogyakarta",
       notes: message.trim(),
       totalPrice,
       status: "Menunggu Verifikasi",
@@ -176,13 +211,40 @@ export default function BookingForm() {
       grandTotal: totalPrice,
     };
 
-    bookings.push(newBooking);
-    setBookings(bookings);
+    // Sync with SQLite Database API so it appears live in the Admin Dashboard!
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingCode,
+          userEmail: currentUser.email,
+          userName: currentUser.fullName,
+          carId: car.id,
+          carName: car.name,
+          startDate: dateStart,
+          endDate: dateEnd,
+          duration: diffDays,
+          serviceType: "Sewa Mobil",
+          pickupLocation: "Kantor KGYK Yogyakarta",
+          dropoffLocation: "Kantor KGYK Yogyakarta",
+          notes: message.trim(),
+          totalPrice,
+          status: "Menunggu Verifikasi",
+          paymentStatus: "Belum Bayar",
+          grandTotal: totalPrice,
+        }),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        newBooking = { ...newBooking, ...saved };
+      }
+    } catch (apiErr) {
+      console.error("Failed to sync booking to backend API:", apiErr);
+    }
 
-    window.__lastBooking = newBooking;
-    window.dispatchEvent(new CustomEvent("booking-success"));
-
-    const waNumber = "62881023331644";
+    const cleanWaNumber = contactSettings.whatsapp.replace(/[^0-9]/g, "");
+    const waNumber = cleanWaNumber.startsWith("0") ? "62" + cleanWaNumber.slice(1) : cleanWaNumber;
     const formatDateIndo = (dateStr: string) =>
       new Date(dateStr).toLocaleDateString("id-ID", {
         day: "numeric",
@@ -191,32 +253,49 @@ export default function BookingForm() {
       });
 
     const waMessage = `*KGYK RENTAL MOBIL YOGYAKARTA*
-_Pemesanan Kendaraan Online_
+_Diskusi & Konfirmasi Booking Kendaraan_
+
+Halo Admin KGYK Rental, saya telah mengajukan pemesanan kendaraan secara online dan ingin mendiskusikan rincian penawaran serta kesepakatan harga fix (final price) penyewaan.
+
+--------------------------------------------------
+*KODE BOOKING*: *${newBooking.bookingCode}*
 --------------------------------------------------
 
-*DATA PENYEWA*
+*DATA PELANGGAN*
 • Nama: ${currentUser.fullName}
 • Email: ${currentUser.email}
 
-*DETAIL KENDARAAN*
+*DETAIL PEMESANAN KENDARAAN*
 • Mobil: ${newBooking.carName}
-• Periode: ${formatDateIndo(newBooking.startDate)} s/d ${formatDateIndo(newBooking.endDate)}
+• Periode Sewa: ${formatDateIndo(newBooking.startDate)} s/d ${formatDateIndo(newBooking.endDate)}
 • Durasi: ${newBooking.duration} Hari
 
 *RINCIAN BIAYA*
-• Total Estimasi: ${formatRupiah(newBooking.totalPrice)}
-• Kode Booking: *${newBooking.bookingCode}*
+• Estimasi Biaya: ${formatRupiah(newBooking.totalPrice)}
 
+--------------------------------------------------
+Saya ingin mendiskusikan kesepakatan harga fix dan ketersediaan unit lebih lanjut bersama Admin. Mohon informasi & konfirmasi selanjutnya. Terima kasih!
 --------------------------------------------------`;
 
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
-    window.open(waUrl, "_blank");
+    newBooking.waUrl = waUrl;
 
-    setFormCar("");
-    setDateStart("");
-    setDateEnd("");
-    setMessage("");
-    setDocName("");
+    bookings.push(newBooking);
+    setBookings(bookings);
+
+    window.__lastBooking = newBooking;
+
+    setShowSplash(true);
+
+    setTimeout(() => {
+      setShowSplash(false);
+      setFormCar("");
+      setDateStart("");
+      setDateEnd("");
+      setMessage("");
+      setDocName("");
+      window.dispatchEvent(new CustomEvent("booking-success"));
+    }, 1800);
   };
 
   const inputClass =
@@ -236,65 +315,67 @@ _Pemesanan Kendaraan Online_
               <div className="relative z-10">
                 <h3 className="text-3xl font-bold mb-2">Hubungi Kami</h3>
                 <p className="text-slate-300 mb-10">
-                  Kami siap melayani kebutuhan transportasi Anda 24 jam setiap harinya.
+                  Tim kami siap melayani kebutuhan transportasi Anda 24/7 di
+                  Yogyakarta.
                 </p>
 
-                <div className="space-y-6">
+                <div className="space-y-6 mb-12">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <PiMapPinFill />
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                      <PiMapPinFill className="text-accent text-xl" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Alamat Kantor</h4>
-                      <p className="text-slate-300 text-sm leading-relaxed">
-                        Jl. Pandega Marga, Manggung, Caturtunggal, Kec. Depok,
-                        Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281
+                      <h4 className="text-sm font-semibold text-slate-300">Lokasi Garasi</h4>
+                      <p className="text-white text-sm">
+                        {contactSettings.address}
                       </p>
                     </div>
                   </div>
+
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <PiPhoneFill />
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                      <PiPhoneFill className="text-accent text-xl" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Telepon / WhatsApp</h4>
-                      <p className="text-slate-300 text-sm">+62 812 3456 7890</p>
+                      <h4 className="text-sm font-semibold text-slate-300">Telepon & WA</h4>
+                      <p className="text-white text-sm">{contactSettings.phone}</p>
                     </div>
                   </div>
+
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex flex-shrink-0 items-center justify-center text-accent text-xl">
-                      <PiEnvelopeSimpleFill />
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                      <PiEnvelopeSimpleFill className="text-accent text-xl" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Email</h4>
-                      <p className="text-slate-300 text-sm">cs@kgyk.com</p>
+                      <h4 className="text-sm font-semibold text-slate-300">Email</h4>
+                      <p className="text-white text-sm">{contactSettings.email}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-12 flex gap-4 relative z-10">
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
-                  aria-label="Instagram"
-                >
-                  <PiInstagramLogoFill />
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
-                  aria-label="Facebook"
-                >
-                  <PiFacebookLogoFill />
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-colors duration-300 text-lg"
-                  aria-label="Twitter"
-                >
-                  <PiTwitterLogoFill />
-                </a>
+              <div className="relative z-10 pt-6 border-t border-white/10">
+                <p className="text-xs text-slate-400 mb-3">Ikuti Media Sosial Kami</p>
+                <div className="flex gap-3">
+                  <a
+                    href="#"
+                    className="w-9 h-9 bg-white/10 hover:bg-primary rounded-xl flex items-center justify-center text-white transition-colors"
+                  >
+                    <PiInstagramLogoFill className="text-lg" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-9 h-9 bg-white/10 hover:bg-primary rounded-xl flex items-center justify-center text-white transition-colors"
+                  >
+                    <PiFacebookLogoFill className="text-lg" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-9 h-9 bg-white/10 hover:bg-primary rounded-xl flex items-center justify-center text-white transition-colors"
+                  >
+                    <PiTwitterLogoFill className="text-lg" />
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -358,9 +439,9 @@ _Pemesanan Kendaraan Online_
                           onChange={(e) => setFormCar(e.target.value)}
                         >
                           <option value="">Pilih Armada Mobil</option>
-                          {cars.map((car) => (
+                          {carList.map((car) => (
                             <option key={car.id} value={car.name}>
-                              {car.name} ({car.type})
+                              {car.name} ({car.type}) {!car.status ? "- (Tidak Tersedia)" : ""}
                             </option>
                           ))}
                         </select>
@@ -487,6 +568,50 @@ _Pemesanan Kendaraan Online_
           </div>
         </div>
       </div>
+
+      {showSplash && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-navy/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 max-w-sm w-full mx-4 text-center shadow-2xl flex flex-col items-center animate-scale-up">
+            <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+              {/* Smooth Single-Spin SVG Loading Ring */}
+              <svg
+                className="w-full h-full transform -rotate-90 animate-spin-once"
+                viewBox="0 0 100 100"
+              >
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  className="stroke-slate-100"
+                  strokeWidth="6"
+                  fill="none"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  className="stroke-emerald-500 animate-stroke-once"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+
+              {/* Center Success Badge with Smooth Pop Effect */}
+              <div className="absolute inset-0 m-auto w-16 h-16 bg-gradient-to-tr from-green-500 to-emerald-400 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 animate-pop-scale">
+                <PiCheckCircleFill className="text-4xl" />
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-extrabold text-navy mb-2">
+              Pesanan Berhasil Dibuat!
+            </h3>
+            <p className="text-slate-500 text-sm">
+              Menyiapkan Struk & Nota Pemesanan Anda...
+            </p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

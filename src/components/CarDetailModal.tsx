@@ -16,8 +16,21 @@ export default function CarDetailModal() {
   const [car, setCar] = useState<Car | null>(null);
 
   useEffect(() => {
-    const handleOpen = (e: Event) => {
+    const handleOpen = async (e: Event) => {
       const detail = (e as CustomEvent).detail as { id: number };
+      try {
+        const res = await fetch("/api/cars");
+        if (res.ok) {
+          const liveCars = await res.json();
+          const found = liveCars.find((c: Car) => c.id === detail?.id);
+          if (found) {
+            setCar(found);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch live car details:", err);
+      }
       const found = cars.find((c) => c.id === detail?.id);
       if (found) setCar(found);
     };
@@ -31,26 +44,23 @@ export default function CarDetailModal() {
   const handleBook = () => {
     if (!car) return;
     close();
-    if (car.status) {
-      const currentUser = JSON.parse(
-        localStorage.getItem("kgyk_current_user") || "null"
+
+    const currentUser = JSON.parse(
+      localStorage.getItem("kgyk_current_user") || "null"
+    );
+    if (!currentUser) {
+      showToast(
+        "Silakan login atau daftar akun terlebih dahulu untuk melakukan pemesanan.",
+        "error"
       );
-      if (!currentUser) {
-        showToast(
-          "Silakan login atau daftar akun terlebih dahulu untuk melakukan pemesanan.",
-          "error"
-        );
-        window.dispatchEvent(new CustomEvent("app:open-login"));
-        return;
-      }
-      setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent("app:book-car", { detail: { carName: car.name } })
-        );
-      }, 300);
-    } else {
-      showToast("Mobil saat ini tidak tersedia.", "warning");
+      window.dispatchEvent(new CustomEvent("app:open-login"));
+      return;
     }
+    setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent("app:book-car", { detail: { carName: car.name } })
+      );
+    }, 300);
   };
 
   if (!car) return null;
@@ -142,14 +152,9 @@ export default function CarDetailModal() {
             <button
               id="detailModalBookBtn"
               onClick={handleBook}
-              disabled={!car.status}
-              className={
-                car.status
-                  ? "w-full py-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer"
-                  : "w-full py-4 bg-slate-200 text-slate-500 font-bold rounded-xl cursor-not-allowed"
-              }
+              className="w-full py-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer"
             >
-              {car.status ? "Booking Mobil Ini" : "Mobil Tidak Tersedia"}
+              Booking Mobil Ini
             </button>
           </div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import html2canvas from "html2canvas-pro";
 import { formatRupiah } from "@/lib/format";
 import type { Booking } from "@/lib/app";
@@ -10,13 +9,34 @@ import {
   PiX,
   PiSteeringWheelFill,
   PiClockFill,
-  PiPrinter,
   PiDownload,
 } from "react-icons/pi";
 
 export default function SuccessModal() {
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [contactSettings, setContactSettings] = useState({
+    address: "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, DIY 55281",
+    phone: "+62 881-0233-31644",
+    email: "info@kgykrental.com",
+    whatsapp: "62881023331644",
+  });
   const receiptRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setContactSettings({
+            address: data.address || "Jl. Pandega Marga, Caturtunggal, Depok, Sleman, DIY 55281",
+            phone: data.phone || "+62 881-0233-31644",
+            email: data.email || "info@kgykrental.com",
+            whatsapp: data.whatsapp || "62881023331644",
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch settings in SuccessModal:", err));
+  }, []);
 
   useEffect(() => {
     const handleBookingSuccess = () => {
@@ -38,11 +58,61 @@ export default function SuccessModal() {
       year: "numeric",
     });
 
+  const getWaUrl = (b: Booking | null) => {
+    if (!b) return "";
+    if (b.waUrl) return b.waUrl;
+
+    const cleanWa = contactSettings.whatsapp.replace(/[^0-9]/g, "");
+    const waNumber = cleanWa.startsWith("0") ? "62" + cleanWa.slice(1) : cleanWa;
+    const formatDateIndo = (dateStr: string) =>
+      new Date(dateStr).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+    const waMessage = `*KGYK RENTAL MOBIL YOGYAKARTA*
+_Diskusi & Konfirmasi Booking Kendaraan_
+
+Halo Admin KGYK Rental, saya telah mengajukan pemesanan kendaraan secara online dan ingin mendiskusikan rincian penawaran serta kesepakatan harga fix (final price) penyewaan.
+
+--------------------------------------------------
+*KODE BOOKING*: *${b.bookingCode}*
+--------------------------------------------------
+
+*DATA PELANGGAN*
+• Nama: ${b.userName}
+• Email: ${b.userEmail}
+
+*DETAIL PEMESANAN KENDARAAN*
+• Mobil: ${b.carName}
+• Periode Sewa: ${formatDateIndo(b.startDate)} s/d ${formatDateIndo(b.endDate)}
+• Durasi: ${b.duration} Hari
+
+*RINCIAN BIAYA*
+• Estimasi Biaya: ${formatRupiah(b.totalPrice)}
+
+--------------------------------------------------
+Saya ingin mendiskusikan kesepakatan harga fix dan ketersediaan unit lebih lanjut bersama Admin. Mohon informasi & konfirmasi selanjutnya. Terima kasih!
+--------------------------------------------------`;
+
+    return `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+  };
+
+  const handleClose = () => {
+    const waUrl = getWaUrl(booking);
+    setBooking(null);
+    if (waUrl) {
+      window.open(waUrl, "_blank");
+    }
+  };
+
   const handleDownload = () => {
     const element = receiptRef.current;
     if (!element) return;
 
     const filename = `Struk-${booking ? booking.bookingCode : "Booking"}.png`;
+    const waUrl = getWaUrl(booking);
 
     const clone = element.cloneNode(true) as HTMLElement;
     clone.style.position = "absolute";
@@ -79,6 +149,12 @@ export default function SuccessModal() {
             link.click();
             document.body.removeChild(link);
             setTimeout(() => URL.revokeObjectURL(url), 100);
+
+            if (waUrl) {
+              setTimeout(() => {
+                window.open(waUrl, "_blank");
+              }, 300);
+            }
           }, "image/png");
         })
         .catch((err) => {
@@ -86,6 +162,9 @@ export default function SuccessModal() {
             document.body.removeChild(clone);
           }
           alert("Gagal mengunduh gambar: " + (err.message || err.toString()));
+          if (waUrl) {
+            window.open(waUrl, "_blank");
+          }
         });
     }, 50);
   };
@@ -103,7 +182,7 @@ export default function SuccessModal() {
       <div
         className="absolute inset-0 bg-navy/60 backdrop-blur-sm transition-opacity"
         id="modalBackdrop"
-        onClick={close}
+        onClick={handleClose}
       ></div>
 
       <div
@@ -120,7 +199,7 @@ export default function SuccessModal() {
             </span>
           </div>
           <button
-            onClick={close}
+            onClick={handleClose}
             className="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
           >
             <PiX className="text-lg" />
@@ -142,9 +221,9 @@ export default function SuccessModal() {
               </span>
             </div>
             <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
-              Jl. Pandega Marga, Caturtunggal, Kec. Depok, Sleman, DIY 55281
+              {contactSettings.address}
               <br />
-              Telp/WA: +62 812 3456 7890 • Email: cs@kgyk.com
+              Telp/WA: {contactSettings.phone} • Email: {contactSettings.email}
             </p>
           </div>
 
@@ -292,38 +371,20 @@ export default function SuccessModal() {
           </div>
         </div>
 
-        <div className="px-6 pb-5 pt-2 flex flex-col gap-3 print:hidden">
-          <div className="flex gap-3">
-            <button
-              onClick={() => window.print()}
-              className="flex-1 py-3 px-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
-            >
-              <PiPrinter className="text-lg" />
-              Cetak Struk
-            </button>
-            <button
-              onClick={handleDownload}
-              className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
-            >
-              <PiDownload className="text-lg" />
-              Unduh Gambar
-            </button>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              href="/history"
-              onClick={close}
-              className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-center text-sm"
-            >
-              Lihat Pesanan
-            </Link>
-            <button
-              onClick={close}
-              className="flex-1 py-3 px-4 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-all cursor-pointer text-sm"
-            >
-              Tutup
-            </button>
-          </div>
+        <div className="px-6 pb-6 pt-2 flex gap-3 print:hidden">
+          <button
+            onClick={handleDownload}
+            className="flex-1 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer text-sm"
+          >
+            <PiDownload className="text-lg" />
+            Unduh Gambar
+          </button>
+          <button
+            onClick={handleClose}
+            className="flex-1 py-3.5 px-4 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-all cursor-pointer text-sm"
+          >
+            Tutup
+          </button>
         </div>
       </div>
     </div>

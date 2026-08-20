@@ -25,16 +25,30 @@ const filters = [
 
 export default function CarCatalog() {
   const [currentFilter, setCurrentFilter] = useState("all");
+  const [carList, setCarList] = useState(cars);
+
+  useEffect(() => {
+    fetch("/api/cars")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.length > 0) setCarList(data);
+      })
+      .catch((err) => console.error("Failed to fetch live cars:", err));
+  }, []);
+
+  const sortedCars = [...carList].sort((a, b) => b.id - a.id);
 
   const filteredCars =
     currentFilter === "all"
-      ? cars
-      : cars.filter((c) => c.category === currentFilter);
+      ? sortedCars
+      : sortedCars.filter(
+          (c) => c.category?.toLowerCase() === currentFilter.toLowerCase()
+        );
   const displayCars = filteredCars.slice(0, 3);
 
   useEffect(() => {
     ScrollTrigger.refresh();
-  }, [currentFilter]);
+  }, [currentFilter, carList]);
 
   return (
     <section id="mobil" className="py-20 bg-white">
@@ -87,20 +101,6 @@ export default function CarCatalog() {
 
         <div id="carGrid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-gsap="stagger-cards">
           {displayCars.map((car) => {
-            const statusBadge = car.status ? (
-              <span className="px-3 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-full">
-                Tersedia
-              </span>
-            ) : (
-              <span className="px-3 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-full">
-                Tidak Tersedia
-              </span>
-            );
-
-            const btnClass = car.status
-              ? "bg-primary hover:bg-blue-700 text-white shadow-sm hover:shadow-md cursor-pointer hover:-translate-y-0.5"
-              : "bg-slate-200 text-slate-400 cursor-not-allowed";
-
             return (
               <div
                 key={car.id}
@@ -115,7 +115,6 @@ export default function CarCatalog() {
                     alt={car.name}
                     className="w-full h-full object-contain"
                   />
-                  <div className="absolute top-2 right-2 z-20">{statusBadge}</div>
                   <div className="absolute bottom-2 left-2 z-20">
                     <span className="px-3 py-1 bg-slate-50 border border-slate-200/80 text-navy text-xs font-bold rounded-full shadow-xs">
                       {car.type}
@@ -159,9 +158,8 @@ export default function CarCatalog() {
                         <PiInfo className="text-lg" />
                       </button>
                       <button
-                        disabled={!car.status}
-                        onClick={() => car.status && bookCar(car.name)}
-                        className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${btnClass}`}
+                        onClick={() => bookCar(car.name)}
+                        className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all bg-primary hover:bg-blue-700 text-white shadow-sm hover:shadow-md cursor-pointer hover:-translate-y-0.5"
                       >
                         Booking
                       </button>

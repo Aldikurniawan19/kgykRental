@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import {
-  getUsers,
-  setUsers,
   setCurrentUser,
   notifyAuthChanged,
   showToast,
 } from "@/lib/app";
-import { PiX } from "react-icons/pi";
+import { PiX, PiEye, PiEyeSlash } from "react-icons/pi";
 
 export default function AuthModals() {
   const [loginOpen, setLoginOpen] = useState(false);
@@ -19,12 +17,15 @@ export default function AuthModals() {
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPhone, setRegisterPhone] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] = useState(false);
 
   useEffect(() => {
     const openLogin = () => {
@@ -48,7 +49,7 @@ export default function AuthModals() {
     };
   }, []);
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterError(null);
 
@@ -66,58 +67,73 @@ export default function AuthModals() {
       return;
     }
 
-    const users = getUsers();
-    const emailExists = users.some(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
-    );
+    try {
+      const res = await fetch("/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          email,
+          phone,
+          password: registerPassword,
+        }),
+      });
 
-    if (emailExists) {
-      setRegisterError("Email sudah terdaftar dengan akun lain.");
-      return;
+      const data = await res.json();
+      if (!res.ok) {
+        setRegisterError(data.error || "Gagal mendaftarkan akun.");
+        return;
+      }
+
+      const newUser = { fullName: data.fullName, email: data.email, phone: data.phone };
+      setCurrentUser(newUser);
+      notifyAuthChanged();
+
+      setRegisterOpen(false);
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPhone("");
+      setRegisterPassword("");
+      setRegisterConfirmPassword("");
+
+      showToast(`Pendaftaran berhasil! Selamat datang, ${fullName}.`, "success");
+    } catch (err: any) {
+      setRegisterError("Terjadi kesalahan sistem saat mendaftar.");
     }
-
-    const newUser = { fullName, email, phone, password: registerPassword };
-    users.push(newUser);
-    setUsers(users);
-
-    setCurrentUser(newUser);
-    notifyAuthChanged();
-
-    setRegisterOpen(false);
-    setRegisterName("");
-    setRegisterEmail("");
-    setRegisterPhone("");
-    setRegisterPassword("");
-    setRegisterConfirmPassword("");
-
-    showToast(`Pendaftaran berhasil! Selamat datang, ${fullName}.`, "success");
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
 
     const email = loginEmail.trim().toLowerCase();
     const password = loginPassword;
 
-    const users = getUsers();
-    const user = users.find(
-      (u) => u.email.toLowerCase() === email && u.password === password
-    );
+    try {
+      const res = await fetch("/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!user) {
-      setLoginError("Email atau password salah.");
-      return;
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || "Email atau password salah.");
+        return;
+      }
+
+      const user = { fullName: data.fullName, email: data.email, phone: data.phone };
+      setCurrentUser(user);
+      notifyAuthChanged();
+
+      setLoginOpen(false);
+      setLoginEmail("");
+      setLoginPassword("");
+
+      showToast(`Selamat datang kembali, ${user.fullName}!`, "success");
+    } catch (err: any) {
+      setLoginError("Terjadi kesalahan sistem saat login.");
     }
-
-    setCurrentUser(user);
-    notifyAuthChanged();
-
-    setLoginOpen(false);
-    setLoginEmail("");
-    setLoginPassword("");
-
-    showToast(`Selamat datang kembali, ${user.fullName}!`, "success");
   };
 
   const inputClass =
@@ -170,14 +186,28 @@ export default function AuthModals() {
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  className={inputClass}
-                  placeholder="••••••••"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    required
+                    className={`${inputClass} pr-10`}
+                    placeholder="••••••••"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                    title={showLoginPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showLoginPassword ? (
+                      <PiEyeSlash className="text-lg" />
+                    ) : (
+                      <PiEye className="text-lg" />
+                    )}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
@@ -277,27 +307,55 @@ export default function AuthModals() {
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Password (Min. 8 karakter)
                 </label>
-                <input
-                  type="password"
-                  required
-                  className={inputClass}
-                  placeholder="••••••••"
-                  value={registerPassword}
-                  onChange={(e) => setRegisterPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type={showRegisterPassword ? "text" : "password"}
+                    required
+                    className={`${inputClass} pr-10`}
+                    placeholder="••••••••"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                    title={showRegisterPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showRegisterPassword ? (
+                      <PiEyeSlash className="text-lg" />
+                    ) : (
+                      <PiEye className="text-lg" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Konfirmasi Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  className={inputClass}
-                  placeholder="••••••••"
-                  value={registerConfirmPassword}
-                  onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type={showRegisterConfirmPassword ? "text" : "password"}
+                    required
+                    className={`${inputClass} pr-10`}
+                    placeholder="••••••••"
+                    value={registerConfirmPassword}
+                    onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegisterConfirmPassword(!showRegisterConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                    title={showRegisterConfirmPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showRegisterConfirmPassword ? (
+                      <PiEyeSlash className="text-lg" />
+                    ) : (
+                      <PiEye className="text-lg" />
+                    )}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"

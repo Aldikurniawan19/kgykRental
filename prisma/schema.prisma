@@ -1,0 +1,73 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Car {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String
+  capacity    String
+  trans       String
+  price       Int
+  img         String
+  status      Boolean  @default(true)
+  category    String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id              Int       @id @default(autoincrement())
+  bookingCode     String    @unique
+  userEmail       String
+  userName        String
+  userPhone       String?
+  carId           Int
+  carName         String
+  startDate       String
+  endDate         String
+  duration        Int
+  serviceType     String
+  pickupLocation  String
+  dropoffLocation String
+  notes           String?
+  totalPrice      Int
+  status          String    @default("Menunggu Verifikasi")
+  paymentStatus   String    @default("Belum Bayar")
+  paymentMethod   String    @default("Belum Dipilih")
+  paidAt          DateTime?
+  releasedAt      DateTime?
+  returnedAt      DateTime?
+  lateFeeHours    Int       @default(0)
+  lateFee         Int       @default(0)
+  grandTotal      Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  phone     String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Setting {
+  id        Int      @id @default(1)
+  phone     String   @default("+62 881-0233-31644")
+  whatsapp  String   @default("62881023331644")
+  email     String   @default("info@kgykrental.com")
+  address   String   @default("Jl. Pandega Marga, Caturtunggal, Depok, Sleman, Yogyakarta 55281")
+  updatedAt DateTime @updatedAt
+}
+

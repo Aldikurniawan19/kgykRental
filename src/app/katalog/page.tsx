@@ -44,17 +44,24 @@ export default function KatalogPage() {
   const [checkStart, setCheckStart] = useState("");
   const [checkEnd, setCheckEnd] = useState("");
   const [dateChecked, setDateChecked] = useState(false);
+  const [carList, setCarList] = useState<Car[]>(cars);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }
+    fetch("/api/cars")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.length > 0) setCarList(data);
+      })
+      .catch((err) => console.error("Failed to fetch live cars for katalog:", err));
   }, []);
 
   const hasDates = !!checkStart && !!checkEnd;
 
   const result = useMemo(() => {
-    let r: Car[] = [...cars];
+    let r: Car[] = [...carList];
 
     if (searchVal) {
       r = r.filter((car) =>
@@ -63,7 +70,9 @@ export default function KatalogPage() {
     }
 
     if (categoryFilter !== "all") {
-      r = r.filter((car) => car.category === categoryFilter);
+      r = r.filter(
+        (car) => car.category?.toLowerCase() === categoryFilter.toLowerCase()
+      );
     }
 
     if (dateChecked && hasDates) {
@@ -71,10 +80,11 @@ export default function KatalogPage() {
       const end = new Date(checkEnd);
       const bookings = getBookings();
 
+      const activeStatuses = ["Menunggu Verifikasi", "Disetujui", "Dalam Penyewaan"];
       r = r.filter((car) => {
         if (!car.status) return false;
         const isBooked = bookings.some((b) => {
-          if (b.carName === car.name && b.status !== "Ditolak") {
+          if (b.carName === car.name && activeStatuses.includes(b.status)) {
             const bStart = new Date(b.startDate);
             const bEnd = new Date(b.endDate);
             return start <= bEnd && end >= bStart;
@@ -92,11 +102,11 @@ export default function KatalogPage() {
     } else if (sortBy === "capacity-desc") {
       r.sort((a, b) => getCapacityVal(b.capacity) - getCapacityVal(a.capacity));
     } else if (sortBy === "recommended") {
-      r.sort((a, b) => a.id - b.id);
+      r.sort((a, b) => b.id - a.id);
     }
 
     return r;
-  }, [searchVal, sortBy, categoryFilter, checkStart, checkEnd, dateChecked, hasDates]);
+  }, [carList, searchVal, sortBy, categoryFilter, checkStart, checkEnd, dateChecked, hasDates]);
 
   const availabilityMsg = useMemo(() => {
     if (!dateChecked || !hasDates) return null;
@@ -311,19 +321,8 @@ export default function KatalogPage() {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div id="catalogGrid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-gsap="stagger-cards">
             {result.map((car) => {
-              const statusBadge = car.status ? (
-                <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-200">
-                  Tersedia
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 bg-red-50 text-red-700 text-[10px] font-bold rounded-full border border-red-200">
-                  Penuh
-                </span>
-              );
-
-              const btnClass = car.status
-                ? "bg-primary hover:bg-blue-700 text-white shadow-sm hover:shadow-md cursor-pointer hover:-translate-y-0.5"
-                : "bg-slate-200 text-slate-400 cursor-not-allowed";
+              const btnClass =
+                "bg-primary hover:bg-blue-700 text-white shadow-sm hover:shadow-md cursor-pointer hover:-translate-y-0.5";
 
               return (
                 <div
@@ -339,7 +338,6 @@ export default function KatalogPage() {
                       alt={car.name}
                       className="w-full h-full object-contain"
                     />
-                    <div className="absolute top-2 right-2 z-20">{statusBadge}</div>
                     <div className="absolute bottom-2 left-2 z-20">
                       <span className="px-2.5 py-0.5 bg-slate-50 border border-slate-200/80 text-navy text-[10px] font-bold rounded-md shadow-xs">
                         {car.type}
@@ -393,8 +391,7 @@ export default function KatalogPage() {
                           <PiInfo className="text-base" />
                         </button>
                         <button
-                          disabled={!car.status}
-                          onClick={() => car.status && handleBookCar(car.name)}
+                          onClick={() => handleBookCar(car.name)}
                           className={`${btnClass} flex-grow py-2.5 rounded-xl text-xs font-bold transition-all text-center`}
                         >
                           Booking

@@ -30,6 +30,7 @@ export interface Booking {
   lateFeeHours: number;
   lateFee: number;
   grandTotal: number;
+  waUrl?: string;
 }
 
 export const getCurrentUser = (): AppUser | null => {

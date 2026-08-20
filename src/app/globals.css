@@ -83,6 +83,14 @@ body {
   background: #64748b;
 }
 
+/* Active Menu Text Color Guarantee */
+nav a.active,
+.mobile-link.active,
+.nav-link.active {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
 /* Swiper Customization */
 .swiper-pagination-bullet-active {
   background-color: #2563eb !important;
@@ -511,4 +519,53 @@ header:not(.scrolled) #mobile-menu-btn:hover {
     margin: 0 !important;
     width: 100% !important;
   }
+}
+
+/* ══════════════════════════
+   Splash Screen Load Once Animation
+   ══════════════════════════ */
+@keyframes spinOnce {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes strokeDrawOnce {
+  0% {
+    stroke-dashoffset: 264;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes popScale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-spin-once {
+  animation: spinOnce 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-stroke-once {
+  stroke-dasharray: 264;
+  animation: strokeDrawOnce 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-pop-scale {
+  animation: popScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
 }
