@@ -71,10 +71,6 @@ export default function Hero() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={textRef} className="w-full max-w-3xl gsap-hero-text gsap-hidden">
-          <span className="inline-block py-1 px-3 rounded-full bg-white/10 text-accent border border-white/20 text-sm font-semibold mb-6 backdrop-blur-sm">
-            {" "}
-            #1 Pilihan Transportasi Anda{" "}
-          </span>
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
             Rental Mobil <span className="gradient-text">Mudah, Cepat,</span> dan Terpercaya
           </h1>
