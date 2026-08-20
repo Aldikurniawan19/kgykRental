@@ -126,7 +126,7 @@ export default function BookingForm() {
               <PiCalendarCheckFill className="text-sm" /> Reservasi Instan Online
             </span>
             <h3 className="text-xl sm:text-3xl font-extrabold tracking-tight">
-              Siap Sewa Mobil di Jogja?
+              Mau Sewa Mobil di Jogja?
             </h3>
             <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-md">
               Pilih mobil pilihan Anda dan selesaikan pemesanan secara online dengan mudah.

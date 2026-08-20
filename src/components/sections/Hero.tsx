@@ -79,8 +79,8 @@ export default function Hero() {
             Rental Mobil <span className="gradient-text">Mudah, Cepat,</span> dan Terpercaya
           </h1>
           <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl">
-            Sewa mobil harian, mingguan, atau bulanan dengan pilihan kendaraan
-            terbaik untuk perjalanan pribadi, keluarga, maupun bisnis.
+            Sewa mobil harian, mingguan dengan pilihan kendaraan
+            terbaik untuk perjalanan pribadi, keluarga, maupun bisnis area jogja.
           </p>
           <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <a
