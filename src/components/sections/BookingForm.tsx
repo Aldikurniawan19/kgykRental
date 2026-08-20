@@ -40,7 +40,7 @@ export default function BookingForm() {
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Halo Admin KGYK Rental, saya ingin bertanya seputar sewa mobil di Yogyakarta.")}`;
 
   return (
-    <section id="reservasi" className="py-14 sm:py-20 bg-slate-50 relative border-t border-slate-100">
+    <section id="kontak" className="py-14 sm:py-20 bg-slate-50 relative border-t border-slate-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

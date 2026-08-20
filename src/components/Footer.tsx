@@ -114,7 +114,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="#mobil"
+                  href="/katalog"
                   className="text-slate-400 hover:text-accent transition-colors text-sm flex items-center gap-1.5"
                 >
                   <PiCaretRight className="text-xs" /> Katalog Mobil

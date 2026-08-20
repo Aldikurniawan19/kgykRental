@@ -168,7 +168,7 @@ export default function Header() {
     clearCurrentUser();
     notifyAuthChanged();
     showToast("Anda telah berhasil keluar.", "info");
-    if (window.location.hash === "#reservasi") {
+    if (window.location.hash === "#kontak" || window.location.hash === "#reservasi") {
       window.location.hash = "";
     }
   };
@@ -177,11 +177,28 @@ export default function Header() {
     { label: "Beranda", href: isHome ? "#home" : "/#home" },
     { label: "Layanan", href: isHome ? "#layanan" : "/#layanan" },
     {
-      label: "Mobil",
-      href: isHome ? "#mobil" : "/katalog",
+      label: "Katalog",
+      href: "/katalog",
       active: isKatalog,
     },
+    {
+      label: "Kontak",
+      href: isHome ? "#kontak" : "/#kontak",
+    },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    closeMobileMenu();
+    if (isHome && href.includes("#")) {
+      const targetId = href.split("#")[1];
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        e.preventDefault();
+        elem.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", `#${targetId}`);
+      }
+    }
+  };
 
   const initial = user?.fullName
     ? user.fullName.charAt(0).toUpperCase()
@@ -218,6 +235,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className={`font-medium hover:text-primary transition-colors ${
                   item.active ? "active" : ""
                 }`}
@@ -343,7 +361,7 @@ export default function Header() {
                 className={`block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50 mobile-link ${
                   item.active ? "active" : ""
                 }`}
-                onClick={closeMobileMenu}
+                onClick={(e) => handleNavClick(e, item.href)}
               >
                 {item.label}
               </Link>
