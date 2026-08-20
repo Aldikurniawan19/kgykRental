@@ -23,7 +23,7 @@ export default function PromoBanner() {
 
           <div className="relative z-10 md:w-1/3 text-center md:text-right">
             <a
-              href="#reservasi"
+              href="/booking"
               className="inline-block px-8 py-4 bg-white text-primary font-bold rounded-xl shadow-lg hover:bg-blue-50 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl"
             >
               Klaim Promo Sekarang

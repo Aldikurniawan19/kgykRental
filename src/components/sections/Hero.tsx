@@ -90,7 +90,7 @@ export default function Hero() {
               Lihat Katalog Mobil
             </a>
             <a
-              href="#reservasi"
+              href="/booking"
               className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/25 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 text-center flex items-center justify-center gap-2"
             >
               <PiCalendarPlus className="text-xl text-white" />

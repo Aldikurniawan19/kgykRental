@@ -144,17 +144,11 @@ export default function KatalogPage() {
   };
 
   const handleBookCar = (carName: string) => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      openLoginModal();
-      return;
-    }
-
-    let queryStr = `/?car=${encodeURIComponent(carName)}`;
+    let queryStr = `/booking?car=${encodeURIComponent(carName)}`;
     if (checkStart && checkEnd) {
       queryStr += `&start=${checkStart}&end=${checkEnd}`;
     }
-    router.push(`${queryStr}#reservasi`);
+    router.push(queryStr);
   };
 
   return (

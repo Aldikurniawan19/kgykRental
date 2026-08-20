@@ -230,13 +230,13 @@ export default function Header() {
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-4">
             {!user && (
-              <button
+              <Link
                 id="guest-cta"
-                onClick={() => openRegisterModal()}
+                href="/booking"
                 className="hidden lg:inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-blue-700 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
                 Booking sekarang
-              </button>
+              </Link>
             )}
 
             {user && (

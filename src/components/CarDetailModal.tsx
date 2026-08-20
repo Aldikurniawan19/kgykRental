@@ -44,23 +44,7 @@ export default function CarDetailModal() {
   const handleBook = () => {
     if (!car) return;
     close();
-
-    const currentUser = JSON.parse(
-      localStorage.getItem("kgyk_current_user") || "null"
-    );
-    if (!currentUser) {
-      showToast(
-        "Silakan login atau daftar akun terlebih dahulu untuk melakukan pemesanan.",
-        "error"
-      );
-      window.dispatchEvent(new CustomEvent("app:open-login"));
-      return;
-    }
-    setTimeout(() => {
-      window.dispatchEvent(
-        new CustomEvent("app:book-car", { detail: { carName: car.name } })
-      );
-    }, 300);
+    window.location.href = `/booking?car=${encodeURIComponent(car.name)}`;
   };
 
   if (!car) return null;

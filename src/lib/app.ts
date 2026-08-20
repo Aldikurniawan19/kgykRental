@@ -96,7 +96,9 @@ export const openCarDetail = (id: number) => {
 };
 
 export const bookCar = (carName: string) => {
-  window.dispatchEvent(new CustomEvent("app:book-car", { detail: { carName } }));
+  if (typeof window !== "undefined") {
+    window.location.href = `/booking?car=${encodeURIComponent(carName)}`;
+  }
 };
 
 export const generateBookingCode = () => {
