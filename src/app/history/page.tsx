@@ -365,12 +365,12 @@ export default function HistoryPage() {
 
           {/* Standard container matching Navbar container alignment */}
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <nav className="flex items-center gap-1.5 text-xs text-slate-300 mb-2" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
-                <PiHouse /> Beranda
+            <nav className="flex items-center gap-2 text-sm sm:text-base text-slate-200 mb-3" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1.5 font-medium">
+                <PiHouse className="text-base sm:text-lg" /> Beranda
               </Link>
-              <PiCaretRight className="text-slate-500" />
-              <span className="text-white font-semibold">Riwayat Pemesanan</span>
+              <PiCaretRight className="text-slate-400 text-sm sm:text-base" />
+              <span className="text-white font-bold">Riwayat Pemesanan</span>
             </nav>
 
             <div className="max-w-3xl">

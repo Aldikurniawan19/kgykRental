@@ -553,12 +553,12 @@ export default function BookingPage() {
           <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
 
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <nav className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-300 mb-2" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
-                <PiHouse /> Beranda
+            <nav className="flex items-center gap-2 text-sm sm:text-base text-slate-200 mb-3" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1.5 font-medium">
+                <PiHouse className="text-base sm:text-lg" /> Beranda
               </Link>
-              <PiCaretRight className="text-slate-500" />
-              <span className="text-white font-semibold">Formulir Booking</span>
+              <PiCaretRight className="text-slate-400 text-sm sm:text-base" />
+              <span className="text-white font-bold">Formulir Booking</span>
             </nav>
 
             <div className="max-w-2xl">
