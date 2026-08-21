@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -37,6 +38,7 @@ import {
 
 function BookingFormContent() {
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<AppUser | null>(null);
   const [carList, setCarList] = useState<Car[]>(cars);
   const [formCar, setFormCar] = useState("");
@@ -79,14 +81,24 @@ function BookingFormContent() {
   }, []);
 
   useEffect(() => {
-    const updateAuth = () => setUser(getCurrentUser());
-    window.addEventListener("auth-changed", updateAuth);
-    const syncTimer = setTimeout(updateAuth, 0);
-    return () => {
-      window.removeEventListener("auth-changed", updateAuth);
-      clearTimeout(syncTimer);
+    const updateAuth = () => {
+      const current = getCurrentUser();
+      if (current) {
+        setUser(current);
+      } else if (status === "authenticated" && session?.user) {
+        setUser({
+          fullName: session.user.name || session.user.email?.split("@")[0] || "User",
+          email: session.user.email || "",
+          phone: (session.user as any).phone || "",
+        });
+      } else {
+        setUser(null);
+      }
     };
-  }, []);
+    window.addEventListener("auth-changed", updateAuth);
+    updateAuth();
+    return () => window.removeEventListener("auth-changed", updateAuth);
+  }, [session, status]);
 
   // Handle URL Query Parameters (car, carId, start, end)
   useEffect(() => {

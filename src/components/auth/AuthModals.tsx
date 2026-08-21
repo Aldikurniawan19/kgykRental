@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import {
   setCurrentUser,
@@ -9,7 +10,9 @@ import {
 } from "@/lib/app";
 import { PiX, PiEye, PiEyeSlash, PiSpinner } from "react-icons/pi";
 
-export default function AuthModals() {
+function AuthModalsContent() {
+  const searchParams = useSearchParams();
+
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
 
@@ -47,19 +50,15 @@ export default function AuthModals() {
     window.addEventListener("app:open-login", openLogin);
     window.addEventListener("app:open-register", openRegister);
 
-    // Auto open login modal if redirected by middleware with ?openLogin=true
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("openLogin") === "true") {
-        openLogin();
-      }
+    if (searchParams?.get("openLogin") === "true") {
+      openLogin();
     }
 
     return () => {
       window.removeEventListener("app:open-login", openLogin);
       window.removeEventListener("app:open-register", openRegister);
     };
-  }, []);
+  }, [searchParams]);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -464,5 +463,13 @@ export default function AuthModals() {
         </div>
       )}
     </>
+  );
+}
+
+export default function AuthModals() {
+  return (
+    <Suspense fallback={null}>
+      <AuthModalsContent />
+    </Suspense>
   );
 }

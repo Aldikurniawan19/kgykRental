@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
     if (!token) {
       const homeUrl = new URL("/", req.url);
       homeUrl.searchParams.set("openLogin", "true");
-      homeUrl.searchParams.set("callbackUrl", pathname);
+      homeUrl.searchParams.set("callbackUrl", req.nextUrl.pathname + req.nextUrl.search);
       return NextResponse.redirect(homeUrl);
     }
   }

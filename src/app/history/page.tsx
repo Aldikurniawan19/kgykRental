@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import html2canvas from "html2canvas-pro";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -53,6 +54,7 @@ const renderStatusIcon = (status: string) => {
 };
 
 export default function HistoryPage() {
+  const { data: session, status } = useSession();
   const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<AppUser | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
@@ -68,7 +70,17 @@ export default function HistoryPage() {
   useEffect(() => {
     setIsMounted(true);
     const currentUser = getCurrentUser();
-    setUser(currentUser);
+    if (currentUser) {
+      setUser(currentUser);
+    } else if (status === "authenticated" && session?.user) {
+      setUser({
+        fullName: session.user.name || session.user.email?.split("@")[0] || "User",
+        email: session.user.email || "",
+        phone: (session.user as any).phone || "",
+      });
+    } else {
+      setUser(null);
+    }
 
     fetch("/api/settings")
       .then((res) => (res.ok ? res.json() : null))
@@ -98,12 +110,23 @@ export default function HistoryPage() {
     loadLiveBookings();
 
     const handleAuth = () => {
-      setUser(getCurrentUser());
+      const current = getCurrentUser();
+      if (current) {
+        setUser(current);
+      } else if (status === "authenticated" && session?.user) {
+        setUser({
+          fullName: session.user.name || session.user.email?.split("@")[0] || "User",
+          email: session.user.email || "",
+          phone: (session.user as any).phone || "",
+        });
+      } else {
+        setUser(null);
+      }
       loadLiveBookings();
     };
     window.addEventListener("auth-changed", handleAuth);
     return () => window.removeEventListener("auth-changed", handleAuth);
-  }, []);
+  }, [session, status]);
 
   const localBookings = user ? getBookings().filter((b) => b.userEmail === user.email) : [];
   

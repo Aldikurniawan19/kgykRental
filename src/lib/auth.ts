@@ -125,7 +125,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET || "kgyk-rental-super-secret-key-2026",
+  secret: process.env.NEXTAUTH_SECRET || "kgykrental-secret-key-2026",
 };
 
 export default NextAuth(authOptions);

@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   getCurrentUser,
+  setCurrentUser,
   clearCurrentUser,
   notifyAuthChanged,
   showToast,
@@ -25,6 +26,8 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/" || pathname === "";
   const isKatalog = pathname.startsWith("/katalog");
+
+  const { data: session, status } = useSession();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -53,6 +56,33 @@ export default function Header() {
 
     return () => window.removeEventListener("scroll", checkScroll);
   }, []);
+
+  // Synchronize NextAuth session state with LocalStorage
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const current = getCurrentUser();
+      const sessionUser: AppUser = {
+        fullName: session.user.name || session.user.email?.split("@")[0] || "User",
+        email: session.user.email || "",
+        phone: (session.user as any).phone || "",
+      };
+
+      if (
+        !current ||
+        current.email !== sessionUser.email ||
+        current.fullName !== sessionUser.fullName
+      ) {
+        setCurrentUser(sessionUser);
+        notifyAuthChanged();
+      }
+    } else if (status === "unauthenticated") {
+      const current = getCurrentUser();
+      if (current) {
+        clearCurrentUser();
+        notifyAuthChanged();
+      }
+    }
+  }, [session, status]);
 
   useEffect(() => {
     const updateAuthState = () => {
@@ -245,19 +275,19 @@ export default function Header() {
           </nav>
 
           {/* CTA & Mobile Toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             {!user && (
-              <Link
+              <button
                 id="guest-cta"
-                href="/booking"
-                className="hidden lg:inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-blue-700 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                onClick={() => openLoginModal()}
+                className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-blue-700 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
                 Booking sekarang
-              </Link>
+              </button>
             )}
 
             {user && (
-              <div className="hidden lg:inline-flex relative items-center">
+              <div className="hidden sm:inline-flex relative items-center">
                 <button
                   id="profile-dropdown-btn"
                   ref={profileDropdownBtnRef}
@@ -412,6 +442,13 @@ export default function Header() {
                     </span>
                   </div>
                 </div>
+                <Link
+                  href="/booking"
+                  className="w-full py-2.5 bg-primary text-white font-bold rounded-xl text-center text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 cursor-pointer mb-1"
+                  onClick={closeMobileMenu}
+                >
+                  Booking Sekarang
+                </Link>
                 <Link
                   href="/history"
                   className="block px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-50 mobile-link flex items-center gap-2.5 transition-colors"
